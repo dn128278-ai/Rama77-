@@ -18,17 +18,38 @@ jobs:
         distribution: 'temurin'
         java-version: '21'
 
+    - name: Setup Android Project Directory Structure
+      run: |
+        mkdir -p app/src/main/java/com/rama77/app app/src/main/res/layout app/src/main/res/values app/src/main/res/drawable
+        
+        # Move Kotlin source files
+        for f in *.kt; do
+          [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/
+        done
+        
+        # Move XML layout files
+        for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml bottom_*.xml drawer_*.xml; do
+          [ -f "$f" ] && mv "$f" app/src/main/res/layout/
+        done
+        
+        # Move other XML and resource files
+        [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/res/../
+        [ -f colors.xml ] && mv colors.xml app/src/main/res/values/
+        [ -f strings.xml ] && mv strings.xml app/src/main/res/values/
+        [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
+        [ -f bg_orange_circle_badge.xml ] && mv bg_orange_circle_badge.xml app/src/main/res/drawable/
+        
+        # Move Gradle config files
+        [ -f build.gradle.kts ] && mv build.gradle.kts app/
+        [ -f settings.gradle.kts ] && mv settings.gradle.kts ./
+
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
 
     - name: Build Android APK
       run: |
-        if [ -f "./gradlew" ]; then
-          chmod +x gradlew
-          ./gradlew assembleDebug
-        else
-          gradle assembleDebug
-        fi
+        chmod +x gradlew || true
+        gradle assembleDebug || ./gradlew assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
