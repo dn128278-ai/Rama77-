@@ -18,10 +18,10 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android Project Directory Structure & Auto-Fix XMLs
+    - name: Setup Android Project Directory Structure & Clean Manifest
       run: |
         # Create directories for app module and version catalog
-        mkdir -p app/src/main/java/com/rama77/app app/src/main/res/layout app/src/main/res/values app/src/main/res/drawable gradle
+        mkdir -p app/src/main/java/com/rama77/app app/src/main/res/layout app/src/main/res/values app/src/main/res/drawable app/src/main/res/xml gradle
         
         # Create gradle.properties to enable AndroidX
         cat << 'EOF' > gradle.properties
@@ -39,6 +39,26 @@ jobs:
         if [ -f fragment_support.xml ]; then
           sed -i 's/xmlns:android="http:\/\/schemas.android.com\/apk\/res\/android"/xmlns:android="http:\/\/schemas.android.com\/apk\/res\/android" xmlns:app="http:\/\/schemas.android.com\/apk\/res-auto"/g' fragment_support.xml
         fi
+
+        # Clean AndroidManifest.xml from missing references & deprecated package attribute
+        if [ -f AndroidManifest.xml ]; then
+          sed -i 's/package="[^"]*"//g' AndroidManifest.xml
+          sed -i 's/android:dataExtractionRules="[^"]*"//g' AndroidManifest.xml
+          sed -i 's/android:fullBackupContent="[^"]*"//g' AndroidManifest.xml
+        fi
+
+        # Create dummy backup and data extraction rules to prevent linking errors
+        cat << 'EOF' > app/src/main/res/xml/backup_rules.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <full-backup-content></full-backup-content>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/xml/data_extraction_rules.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <data-extraction-rules>
+            <cloud-backup />
+        </data-extraction-rules>
+        EOF
         
         # Move version catalog file
         [ -f libs.versions.toml ] && mv libs.versions.toml gradle/
