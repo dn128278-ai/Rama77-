@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- Top Navigation Header -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarChartDetail"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#F16521"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="DEVI MORNING Jodi Chart"
+        app:titleTextColor="#FFFFFF" />
+
+    <!-- Top Action Buttons: Go To Top / Go To Bottom -->
+    <LinearLayout
+        android:id="@+id/layoutScrollActions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/toolbarChartDetail">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnGoToTop"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_orange_gradient_button"
+            android:text="▲ Go To Top"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnGoToBottom"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_orange_gradient_button"
+            android:text="▼ Go To Bottom"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Weekly Chart Table Grid Header -->
+    <TableLayout
+        android:id="@+id/tableChartHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FDE8D8"
+        android:stretchColumns="*"
+        app:layout_constraintTop_toBottomOf="@id/layoutScrollActions">
+
+        <TableRow android:paddingVertical="8dp">
+            <TextView android:gravity="center" android:text="Date" android:textStyle="bold" android:textColor="#C2410C" />
+            <TextView android:gravity="center" android:text="Mon" android:textStyle="bold" android:textColor="#C2410C" />
+            <TextView android:gravity="center" android:text="Tue" android:textStyle="bold" android:textColor="#C2410C" />
+            <TextView android:gravity="center" android:text="Wed" android:textStyle="bold" android:textColor="#C2410C" />
+            <TextView android:gravity="center" android:text="Thu" android:textStyle="bold" android:textColor="#C2410C" />
+            <TextView android:gravity="center" android:text="Fri" android:textStyle="bold" android:textColor="#C2410C" />
+            <TextView android:gravity="center" android:text="Sat" android:textStyle="bold" android:textColor="#C2410C" />
+            <TextView android:gravity="center" android:text="Sun" android:textStyle="bold" android:textColor="#C2410C" />
+        </TableRow>
+    </TableLayout>
+
+    <!-- Scrollable Weekly Rows -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChartRows"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tableChartHeader" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

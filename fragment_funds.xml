@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EDEDED"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Starline Result Ticker Notification Pill -->
+    <TextView
+        android:id="@+id/tvStarlineTicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_white_rounded_card"
+        android:drawableStart="@drawable/ic_starline_small"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:text="Starline 02:30 PM   158-4"
+        android:textColor="#1F2937"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <!-- 1. Add Funds -->
+    <include
+        android:id="@+id/itemAddFunds"
+        layout="@layout/item_funds_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
+
+    <!-- 2. Add Funds History -->
+    <include
+        android:id="@+id/itemAddFundsHistory"
+        layout="@layout/item_funds_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+    <!-- 3. Withdraw Funds -->
+    <include
+        android:id="@+id/itemWithdrawFunds"
+        layout="@layout/item_funds_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+    <!-- 4. Withdraw Funds History -->
+    <include
+        android:id="@+id/itemWithdrawFundsHistory"
+        layout="@layout/item_funds_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+    <!-- 5. Add Bank Details -->
+    <include
+        android:id="@+id/itemAddBankDetails"
+        layout="@layout/item_funds_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+    <!-- 6. Bank Details History -->
+    <include
+        android:id="@+id/itemBankDetailsHistory"
+        layout="@layout/item_funds_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+</LinearLayout>

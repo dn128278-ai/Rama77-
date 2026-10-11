@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_orange">#F16521</color>
+    <color name="primary_orange_dark">#D84B06</color>
+    <color name="primary_orange_light">#FFF3ED</color>
+    <color name="amber_gradient_start">#FF7A00</color>
+    <color name="amber_gradient_end">#D84B06</color>
+
+    <color name="background_light">#F8F9FA</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="border_card">#E5E7EB</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#1F2937</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="text_muted">#9CA3AF</color>
+
+    <!-- Status Badges -->
+    <color name="status_closed">#DC2626</color>
+    <color name="status_closed_bg">#FEE2E2</color>
+    <color name="status_running">#16A34A</color>
+    <color name="status_running_bg">#DCFCE7</color>
+    <color name="status_pending">#F59E0B</color>
+
+    <!-- Passbook / Accent -->
+    <color name="table_header_bg">#F16521</color>
+    <color name="green_amount">#16A34A</color>
+
+    <!-- Game Center Palette -->
+    <color name="game_center_bg">#EDEDED</color>
+    <color name="game_center_card">#FFFFFF</color>
+</resources>

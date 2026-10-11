@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/drawer_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+    <item
+        android:id="@+id/drawer_charts"
+        android:icon="@drawable/ic_line_chart"
+        android:title="Charts" />
+    <item
+        android:id="@+id/drawer_change_mpin"
+        android:icon="@drawable/ic_lock_key"
+        android:title="Change MPIN" />
+    <item
+        android:id="@+id/drawer_notifications"
+        android:icon="@drawable/ic_bell"
+        android:title="Notifications" />
+    <item
+        android:id="@+id/drawer_how_to_play"
+        android:icon="@drawable/ic_help_circle"
+        android:title="How To Play?" />
+    <item
+        android:id="@+id/drawer_submit_ideas"
+        android:icon="@drawable/ic_message_square"
+        android:title="Submit User Ideas" />
+    <item
+        android:id="@+id/drawer_game_rates"
+        android:icon="@drawable/ic_rupee_coin"
+        android:title="Game Rates" />
+    <item
+        android:id="@+id/drawer_terms"
+        android:icon="@drawable/ic_file_text"
+        android:title="Terms &amp; Conditions" />
+    <item
+        android:id="@+id/drawer_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Settings" />
+    <item
+        android:id="@+id/drawer_language"
+        android:icon="@drawable/ic_globe"
+        android:title="Language" />
+    <item
+        android:id="@+id/drawer_dark_mode"
+        android:icon="@drawable/ic_moon"
+        android:title="Dark Mode" />
+    <item
+        android:id="@+id/drawer_share_app"
+        android:icon="@drawable/ic_share"
+        android:title="Share App" />
+    <item
+        android:id="@+id/drawer_exit"
+        android:icon="@drawable/ic_log_out"
+        android:title="Exit app" />
+</menu>

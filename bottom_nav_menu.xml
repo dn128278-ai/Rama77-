@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_history"
+        android:icon="@drawable/ic_clock_history"
+        android:title="History" />
+    <item
+        android:id="@+id/nav_passbook"
+        android:icon="@drawable/ic_book_passbook"
+        android:title="Passbook" />
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+    <item
+        android:id="@+id/nav_funds"
+        android:icon="@drawable/ic_wallet_funds"
+        android:title="Funds" />
+    <item
+        android:id="@+id/nav_support"
+        android:icon="@drawable/ic_support_headset"
+        android:title="Support" />
+</menu>
