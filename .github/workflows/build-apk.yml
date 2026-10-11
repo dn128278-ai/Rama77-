@@ -33,15 +33,14 @@ jobs:
         done
         
         # Move other XML and resource files
-        [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/res/../
+        [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/
         [ -f colors.xml ] && mv colors.xml app/src/main/res/values/
         [ -f strings.xml ] && mv strings.xml app/src/main/res/values/
         [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
         [ -f bg_orange_circle_badge.xml ] && mv bg_orange_circle_badge.xml app/src/main/res/drawable/
         
-        # Move Gradle config files
+        # Move Gradle config files cleanly
         [ -f build.gradle.kts ] && mv build.gradle.kts app/
-        [ -f settings.gradle.kts ] && mv settings.gradle.kts ./
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
