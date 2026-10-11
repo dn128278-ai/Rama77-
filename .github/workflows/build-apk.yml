@@ -18,17 +18,27 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android Project Directory Structure
+    - name: Setup Android Project Directory Structure & Auto-Fix XMLs
       run: |
         # Create directories for app module and version catalog
         mkdir -p app/src/main/java/com/rama77/app app/src/main/res/layout app/src/main/res/values app/src/main/res/drawable gradle
         
-        # Create gradle.properties to enable AndroidX and Jetifier
+        # Create gradle.properties to enable AndroidX
         cat << 'EOF' > gradle.properties
         android.useAndroidX=true
         android.enableJetifier=true
         org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
         EOF
+
+        # Auto-Fix strings.xml unescaped character
+        if [ -f strings.xml ]; then
+          sed -i "s/Don't/Don\\\'t/g" strings.xml
+        fi
+
+        # Auto-Fix missing app namespace in fragment_support.xml
+        if [ -f fragment_support.xml ]; then
+          sed -i 's/xmlns:android="http:\/\/schemas.android.com\/apk\/res\/android"/xmlns:android="http:\/\/schemas.android.com\/apk\/res\/android" xmlns:app="http:\/\/schemas.android.com\/apk\/res-auto"/g' fragment_support.xml
+        fi
         
         # Move version catalog file
         [ -f libs.versions.toml ] && mv libs.versions.toml gradle/
