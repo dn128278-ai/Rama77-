@@ -18,26 +18,21 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android Project Directory Structure & Generate ALL Resources
+    - name: Setup Android Project Directory Structure & Inject ALL Missing Drawables
       run: |
         # Create directories for app module and resource structure
         mkdir -p app/src/main/java/com/rama77/app app/src/main/res/layout app/src/main/res/values app/src/main/res/drawable app/src/main/res/color app/src/main/res/menu app/src/main/res/mipmap-anydpi-v26 app/src/main/res/xml gradle
         
-        # Create gradle.properties to enable AndroidX
+        # Create gradle.properties
         cat << 'EOF' > gradle.properties
         android.useAndroidX=true
         android.enableJetifier=true
         org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
         EOF
 
-        # Fix strings.xml unescaped character
+        # Escape special character in strings.xml
         if [ -f strings.xml ]; then
           sed -i "s/Don't/Don\\\'t/g" strings.xml
-        fi
-
-        # Fix missing app namespace in fragment_support.xml
-        if [ -f fragment_support.xml ]; then
-          sed -i 's/xmlns:android="http:\/\/schemas.android.com\/apk\/res\/android"/xmlns:android="http:\/\/schemas.android.com\/apk\/res\/android" xmlns:app="http:\/\/schemas.android.com\/apk\/res-auto"/g' fragment_support.xml
         fi
 
         # Remove unsupported helperTextColor attribute from layout files
@@ -45,14 +40,14 @@ jobs:
           [ -f "$f" ] && sed -i 's/app:helperTextColor="[^"]*"//g' "$f"
         done
 
-        # Clean AndroidManifest.xml from missing references
+        # Clean AndroidManifest.xml
         if [ -f AndroidManifest.xml ]; then
           sed -i 's/package="[^"]*"//g' AndroidManifest.xml
           sed -i 's/android:dataExtractionRules="[^"]*"//g' AndroidManifest.xml
           sed -i 's/android:fullBackupContent="[^"]*"//g' AndroidManifest.xml
         fi
 
-        # Create dummy backup and data extraction rules
+        # Create dummy rules
         cat << 'EOF' > app/src/main/res/xml/backup_rules.xml
         <?xml version="1.0" encoding="utf-8"?>
         <full-backup-content></full-backup-content>
@@ -65,7 +60,7 @@ jobs:
         </data-extraction-rules>
         EOF
 
-        # Generate fallback styles.xml and attrs.xml
+        # Values & Styles
         cat << 'EOF' > app/src/main/res/values/styles.xml
         <?xml version="1.0" encoding="utf-8"?>
         <resources>
@@ -90,25 +85,15 @@ jobs:
         </resources>
         EOF
 
-        # Generate Color Selectors
-        cat << 'EOF' > app/src/main/res/color/selector_nav_color.xml
+        # Generate Drawables & Shapes
+        cat << 'EOF' > app/src/main/res/drawable/bg_page_inactive.xml
         <?xml version="1.0" encoding="utf-8"?>
-        <selector xmlns:android="http://schemas.android.com/apk/res/android">
-            <item android:state_checked="true" android:color="#F16521" />
-            <item android:color="#8E8E93" />
-        </selector>
-        EOF
-
-        # Generate Drawables Fallbacks
-        cat << 'EOF' > app/src/main/res/drawable/bg_orange_gradient_button.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <gradient android:startColor="#F16521" android:endColor="#D84B06" android:angle="45"/>
-            <corners android:radius="12dp"/>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+            <solid android:color="#44FFFFFF"/>
         </shape>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/bg_button_orange.xml
+        cat << 'EOF' > app/src/main/res/drawable/bg_page_active_orange.xml
         <?xml version="1.0" encoding="utf-8"?>
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <solid android:color="#F16521"/>
@@ -116,149 +101,114 @@ jobs:
         </shape>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/bg_orange_circle.xml
+        cat << 'EOF' > app/src/main/res/drawable/bg_badge_amount_green.xml
         <?xml version="1.0" encoding="utf-8"?>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
-            <solid android:color="#F16521"/>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="#2E7D32"/>
+            <corners android:radius="8dp"/>
         </shape>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/bg_white_rounded_card.xml
+        cat << 'EOF' > app/src/main/res/drawable/bg_orange_gradient_drawer.xml
         <?xml version="1.0" encoding="utf-8"?>
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <gradient android:startColor="#F16521" android:endColor="#A83200" android:angle="90"/>
+        </shape>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/bg_avatar_circle.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
             <solid android:color="#FFFFFF"/>
-            <corners android:radius="16dp"/>
         </shape>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/bg_category_tab_selected.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="#F16521"/>
-            <corners android:radius="20dp"/>
-        </shape>
-        EOF
-
-        cat << 'EOF' > app/src/main/res/drawable/bg_translucent_circle.xml
+        cat << 'EOF' > app/src/main/res/drawable/bg_play_button.xml
         <?xml version="1.0" encoding="utf-8"?>
         <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
-            <solid android:color="#22FFFFFF"/>
-        </shape>
-        EOF
-
-        cat << 'EOF' > app/src/main/res/drawable/bg_translucent_pill.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="#22FFFFFF"/>
-            <corners android:radius="20dp"/>
-        </shape>
-        EOF
-
-        cat << 'EOF' > app/src/main/res/drawable/bg_session_container.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="#1E1E24"/>
-            <corners android:radius="14dp"/>
-        </shape>
-        EOF
-
-        cat << 'EOF' > app/src/main/res/drawable/bg_session_tab_active.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <solid android:color="#F16521"/>
-            <corners android:radius="10dp"/>
         </shape>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/bg_session_tab_inactive.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="#2C2C30"/>
-            <corners android:radius="10dp"/>
-        </shape>
-        EOF
-
-        cat << 'EOF' > app/src/main/res/drawable/bg_logo_icon.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="#F16521"/>
-            <corners android:radius="10dp"/>
-        </shape>
-        EOF
-
-        cat << 'EOF' > app/src/main/res/drawable/bg_wallet_pill.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="#2A2A2E"/>
-            <corners android:radius="20dp"/>
-        </shape>
-        EOF
-
-        # Vectors
-        cat << 'EOF' > app/src/main/res/drawable/ic_call_orange.xml
+        # Vector Icons Fallbacks
+        cat << 'EOF' > app/src/main/res/drawable/ic_headset_support.xml
         <?xml version="1.0" encoding="utf-8"?>
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-            <path android:fillColor="#F16521" android:pathData="M6.62,10.79c1.44,2.83 3.76,5.14 6.59,6.59l2.2,-2.2c0.27,-0.27 0.67,-0.36 1.02,-0.24 1.12,0.37 2.33,0.57 3.57,0.57 0.55,0 1,0.45 1,1V20c0,0.55 -0.45,1 -1,1 -9.39,0 -17,-7.61 -17,-17 0,-0.55 0.45,-1 1,-1h3.5c0.55,0 1,0.45 1,1 0,1.25 0.2,2.45 0.57,3.57 0.11,0.35 0.03,0.74 -0.24,1.02l-2.2,2.2z"/>
+            <path android:fillColor="#F16521" android:pathData="M12,1c-4.97,0 -9,4.03 -9,9v7c0,1.66 1.34,3 3,3h3v-8H6v-2c0,-3.31 2.69,-6 6,-6s6,2.69 6,6v2h-3v8h3c1.66,0 3,-1.34 3,-3v-7c0,-4.97 -4.03,-9 -9,-9z"/>
         </vector>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/ic_whatsapp_green.xml
+        cat << 'EOF' > app/src/main/res/drawable/ic_chevron_right.xml
         <?xml version="1.0" encoding="utf-8"?>
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-            <path android:fillColor="#25D366" android:pathData="M12,2A10,10 0 0,0 2,12C2,13.8 2.5,15.5 3.4,17L2,22L7.2,20.6C8.6,21.5 10.3,22 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+            <path android:fillColor="#8E8E93" android:pathData="M10,6L8.59,7.41 13.17,12l-4.58,4.59L10,18l6,-6z"/>
         </vector>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/ic_lock_key.xml
+        cat << 'EOF' > app/src/main/res/drawable/ic_trash.xml
         <?xml version="1.0" encoding="utf-8"?>
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-            <path android:fillColor="#F16521" android:pathData="M18,8h-1V6c0,-2.76 -2.24,-5 -5,-5S7,3.24 7,6v2H6c-1.1,0 -2,0.9 -2,2v10c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2V10c0,-1.1 -0.9,-2 -2,-2zm-6,9c-1.1,0 -2,-0.9 -2,-2s0.9,-2 2,-2 2,0.9 2,2 -0.9,2 -2,2zm3.1,-9H8.9V6c0,-1.71 1.39,-3.1 3.1,-3.1 1.71,0 3.1,1.39 3.1,3.1v2z"/>
+            <path android:fillColor="#D32F2F" android:pathData="M6,19c0,1.1 0.9,2 2,2h8c1.1,0 2,-0.9 2,-2V7H6v12zM19,4h-3.5l-1,-1h-5l-1,1H5v2h14V4z"/>
         </vector>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/ic_starline_small.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="16dp" android:height="16dp" android:viewportWidth="24" android:viewportHeight="24">
-            <path android:fillColor="#F16521" android:pathData="M12,17.27L18.18,21l-1.64,-7.03L22,9.24l-7.19,-0.61L12,2 9.19,8.63 2,9.24l5.46,4.73L5.82,21z"/>
-        </vector>
-        EOF
-
-        cat << 'EOF' > app/src/main/res/drawable/ic_arrow_back.xml
+        cat << 'EOF' > app/src/main/res/drawable/ic_target.xml
         <?xml version="1.0" encoding="utf-8"?>
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-            <path android:fillColor="#FFFFFF" android:pathData="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z"/>
+            <path android:fillColor="#F16521" android:pathData="M12,2C6.49,2 2,6.49 2,12s4.49,10 10,10 10,-4.49 10,-10S17.51,2 12,2zm0,18c-4.41,0 -8,-3.59 -8,-8s3.59,-8 8,-8 8,3.59 8,8 -3.59,8 -8,8zm0,-14c-3.31,0 -6,2.69 -6,6s2.69,6 6,6 6,-2.69 6,-6 -2.69,-6 -6,-6zm0,10c-2.21,0 -4,-1.79 -4,-4s1.79,-4 4,-4 4,1.79 4,4 -1.79,4 -4,4z"/>
         </vector>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/ic_fingerprint_line.xml
+        cat << 'EOF' > app/src/main/res/drawable/ic_info_circle_orange.xml
         <?xml version="1.0" encoding="utf-8"?>
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-            <path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zm0,18c-4.41,0 -8,-3.59 -8,-8s3.59,-8 8,-8 8,3.59 8,8 -3.59,8 -8,8z"/>
+            <path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zm1,15h-2v-6h2v6zm0,-8h-2V7h2v2z"/>
         </vector>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/ic_menu.xml
+        cat << 'EOF' > app/src/main/res/drawable/ic_play_arrow.xml
         <?xml version="1.0" encoding="utf-8"?>
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-            <path android:fillColor="#FFFFFF" android:pathData="M3,18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            <path android:fillColor="#FFFFFF" android:pathData="M8,5v14l11,-7z"/>
         </vector>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/ic_wallet.xml
+        cat << 'EOF' > app/src/main/res/drawable/ic_user.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <path android:fillColor="#F16521" android:pathData="M12,12c2.21,0 4,-1.79 4,-4s-1.79,-4 -4,-4 -4,1.79 -4,4 1.79,4 4,4zm0,2c-2.67,0 -8,1.34 -8,4v2h16v-2c0,-2.66 -5.33,-4 -8,-4z"/>
+        </vector>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/ic_clock_history.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <path android:fillColor="#FFFFFF" android:pathData="M13,3c-4.97,0 -9,4.03 -9,9H1l3.89,3.89 0.07,0.14L9,12H6c0,-3.87 3.13,-7 7,-7s7,3.13 7,7 -3.13,7 -7,7c-1.93,0 -3.68,-0.79 -4.94,-2.06l-1.42,1.42C8.27,19.99 10.51,21 13,21c4.97,0 9,-4.03 9,-9s-4.03,-9 -9,-9zm-1,5v5l4.25,2.52 0.77,-1.28 -3.52,-2.09V8z"/>
+        </vector>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/ic_book_passbook.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <path android:fillColor="#FFFFFF" android:pathData="M18,2H6c-1.1,0 -2,0.9 -2,2v16c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2V4c0,-1.1 -0.9,-2 -2,-2zM6,4h5v8l-2.5,-1.5L6,12V4z"/>
+        </vector>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/ic_home.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <path android:fillColor="#FFFFFF" android:pathData="M10,20v-6h4v6h5v-8h3L12,3 2,12h3v8z"/>
+        </vector>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/ic_wallet_funds.xml
         <?xml version="1.0" encoding="utf-8"?>
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
             <path android:fillColor="#FFFFFF" android:pathData="M21,18v1c0,1.1 -0.9,2 -2,2H5c-1.11,0 -2,-0.9 -2,-2V5c0,-1.1 0.89,-2 2,-2h14c1.1,0 2,0.9 2,2v1h-9c-1.11,0 -2,0.9 -2,2v8c0,1.1 0.89,2 2,2h9zm-9,-2h10V8H12v8zm4,-2.5c-0.83,0 -1.5,-0.67 -1.5,-1.5s0.67,-1.5 1.5,-1.5 1.5,0.67 1.5,1.5 -0.67,1.5 -1.5,1.5z"/>
         </vector>
         EOF
 
-        cat << 'EOF' > app/src/main/res/drawable/ic_bell.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-            <path android:fillColor="#FFFFFF" android:pathData="M12,22c1.1,0 2,-0.9 2,-2h-4c0,1.1 0.89,2 2,2zm6,-6v-5c0,-3.07 -1.63,-5.64 -4.5,-6.32V4c0,-0.83 -0.67,-1.5 -1.5,-1.5s-1.5,0.67 -1.5,1.5v0.68C7.64,5.36 6,7.92 6,11v5l-2,2v1h16v-1l-2,-2z"/>
-        </vector>
-        EOF
-
-        # Generate default launcher icons
+        # Launcher icons
         cat << 'EOF' > app/src/main/res/drawable/ic_launcher_background.xml
         <?xml version="1.0" encoding="utf-8"?>
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
@@ -282,58 +232,32 @@ jobs:
         </adaptive-icon>
         EOF
 
-        # Generate Layout Fallbacks if missing
-        cat << 'EOF' > app/src/main/res/layout/nav_header_main.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent" android:layout_height="160dp"
-            android:background="#F16521" android:orientation="vertical" android:padding="16dp" android:gravity="bottom">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="RAMA77" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"/>
-        </LinearLayout>
-        EOF
-
-        cat << 'EOF' > app/src/main/res/layout/item_funds_menu.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal" android:padding="12dp">
-            <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF"/>
-        </LinearLayout>
-        EOF
-
-        # Move Menu XMLs if present
-        for f in bottom_nav_menu.xml drawer_nav_menu.xml; do
-          [ -f "$f" ] && mv "$f" app/src/main/res/menu/
-        done
-        
-        # Move version catalog file
+        # Move Files Cleanly
         [ -f libs.versions.toml ] && mv libs.versions.toml gradle/
         
-        # Move Kotlin source files
         for f in *.kt; do
           [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/
         done
         
-        # Move XML layout files
         for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do
           [ -f "$f" ] && mv "$f" app/src/main/res/layout/
         done
+
+        for f in bottom_nav_menu.xml drawer_nav_menu.xml; do
+          [ -f "$f" ] && mv "$f" app/src/main/res/menu/
+        done
         
-        # Move ALL drawables (bg_*.xml, ic_*.xml) to res/drawable
         for f in bg_*.xml ic_*.xml; do
           [ -f "$f" ] && mv "$f" app/src/main/res/drawable/
         done
         
-        # Move other XML resources
         [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/
         [ -f colors.xml ] && mv colors.xml app/src/main/res/values/
         [ -f strings.xml ] && mv strings.xml app/src/main/res/values/
         [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
         
-        # Setup App Module build script
         [ -f build.gradle.kts ] && mv build.gradle.kts app/
         
-        # Create Root build.gradle.kts
         cat << 'EOF' > build.gradle.kts
         plugins {
             alias(libs.plugins.android.application) apply false
