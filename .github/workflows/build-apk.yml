@@ -23,6 +23,13 @@ jobs:
         # Create directories for app module and version catalog
         mkdir -p app/src/main/java/com/rama77/app app/src/main/res/layout app/src/main/res/values app/src/main/res/drawable gradle
         
+        # Create gradle.properties to enable AndroidX and Jetifier
+        cat << 'EOF' > gradle.properties
+        android.useAndroidX=true
+        android.enableJetifier=true
+        org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+        EOF
+        
         # Move version catalog file
         [ -f libs.versions.toml ] && mv libs.versions.toml gradle/
         
