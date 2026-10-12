@@ -113,24 +113,24 @@ jobs:
         </LinearLayout>
         EOF
 
-        # DIRECTLY GENERATE ALL NEEDED DRAWABLES INSIDE app/src/main/res/drawable/
-        for name in bg_game_center_scaffold bg_orange_gradient_button bg_button_orange bg_orange_circle bg_orange_circle_badge bg_white_rounded_card bg_translucent_circle bg_translucent_pill bg_session_container bg_session_tab_active bg_session_tab_inactive bg_logo_icon bg_wallet_pill bg_page_inactive bg_page_active_orange bg_badge_amount_green bg_category_tab_selected ic_call_orange ic_whatsapp_green ic_lock_key ic_starline_small ic_target ic_info_circle_orange ic_fingerprint_line ic_menu ic_wallet ic_bell ic_arrow_back ic_trash ic_play_button ic_play_arrow ic_user ic_clock_history ic_book_passbook ic_home ic_wallet_funds ic_support_headset ic_line_chart ic_help_circle ic_message_square ic_rupee_coin ic_file_text ic_settings ic_globe ic_moon ic_orange_gradient_drawer bg_orange_gradient_drawer ic_avatar_circle ic_ico_circle_orange; do
-          if [[ "$name" == ic_* ]]; then
-            cat << EOT > "app/src/main/res/drawable/${name}.xml"
-<?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
-</vector>
-EOT
-          else
-            cat << EOT > "app/src/main/res/drawable/${name}.xml"
+        # GENERATE ALL MISSING VECTOR AND SHAPE DRAWABLES EXPLICITLY
+        for name in bg_game_center_scaffold bg_orange_gradient_button bg_button_orange bg_orange_circle bg_orange_circle_badge bg_white_rounded_card bg_translucent_circle bg_translucent_pill bg_session_container bg_session_tab_active bg_session_tab_inactive bg_logo_icon bg_wallet_pill bg_page_inactive bg_page_active_orange bg_badge_amount_green bg_category_tab_selected bg_orange_gradient_drawer; do
+          cat << EOT > "app/src/main/res/drawable/${name}.xml"
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="#F16521"/>
     <corners android:radius="8dp"/>
 </shape>
 EOT
-          fi
+        done
+
+        for name in ic_call_orange ic_whatsapp_green ic_lock_key ic_starline_small ic_target ic_info_circle_orange ic_fingerprint_line ic_menu ic_wallet ic_bell ic_arrow_back ic_trash ic_play_button ic_play_arrow ic_user ic_clock_history ic_book_passbook ic_home ic_wallet_funds ic_support_headset ic_line_chart ic_help_circle ic_message_square ic_rupee_coin ic_file_text ic_settings ic_globe ic_moon ic_orange_gradient_drawer ic_avatar_circle ic_ico_circle_orange; do
+          cat << EOT > "app/src/main/res/drawable/${name}.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
+</vector>
+EOT
         done
 
         # Launcher Icons
@@ -170,6 +170,10 @@ EOT
 
         for f in bottom_nav_menu.xml drawer_nav_menu.xml; do
           [ -f "$f" ] && mv "$f" app/src/main/res/menu/
+        done
+        
+        for f in bg_*.xml ic_*.xml; do
+          [ -f "$f" ] && mv "$f" app/src/main/res/drawable/
         done
         
         [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/
