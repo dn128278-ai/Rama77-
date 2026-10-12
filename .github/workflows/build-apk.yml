@@ -167,10 +167,11 @@ jobs:
         open class PassbookFragment : Fragment()
         open class FundsFragment : Fragment()
         open class SupportFragment : Fragment()
-        class SeriesTabAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
+        open class SeriesTabAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
             override fun getItemCount(): Int = 0
             override fun createFragment(position: Int): Fragment = Fragment()
         }
+        interface ApiService
         EOF
 
     - name: 4. Clean XMLs, Move Files & Build APK
@@ -237,11 +238,14 @@ jobs:
             implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
             implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+            implementation("com.squareup.retrofit2:retrofit:2.9.0")
+            implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+            implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
         }
         EOF
 
         gradle wrapper --gradle-version 8.5
-        gradle :app:assembleDebug --no-daemon
+        gradle :app:assembleDebug --refresh-dependencies --no-daemon
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
