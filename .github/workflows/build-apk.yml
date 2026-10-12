@@ -31,7 +31,27 @@ jobs:
                  app/src/main/res/drawable \
                  app/src/main/res/values
 
-        # Fix root build.gradle.kts to remove version catalog dependency error
+        # Ensure settings.gradle.kts exists so Gradle recognizes the 'app' module
+        cat << 'EOF' > settings.gradle.kts
+        pluginManagement {
+            repositories {
+                google()
+                mavenCentral()
+                gradlePluginPortal()
+            }
+        }
+        dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+            repositories {
+                google()
+                mavenCentral()
+            }
+        }
+        rootProject.name = "Rama77"
+        include(":app")
+        EOF
+
+        # Fix root build.gradle.kts
         cat << 'EOF' > build.gradle.kts
         plugins {
             id("com.android.application") version "8.4.1" apply false
