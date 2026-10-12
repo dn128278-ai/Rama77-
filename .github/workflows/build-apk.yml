@@ -62,7 +62,6 @@ jobs:
       run: |
         [ -f strings.xml ] && sed -i "s/Don't/Don\\\'t/g" strings.xml
         
-        # Clean up malformed card corner radius or helper text attributes in all XML files
         for f in *.xml; do 
           [ -f "$f" ] && sed -i 's/app:helperTextColor="[^"]*"//g; s/app:cardCornerRadius&app:[^"]*//g; s/&app:[^"]*//g' "$f"
         done
@@ -196,7 +195,8 @@ jobs:
         }
         EOF
 
-        ./gradlew :app:assembleDebug --no-daemon
+        gradle wrapper --gradle-version 8.5
+        gradle :app:assembleDebug --no-daemon
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
