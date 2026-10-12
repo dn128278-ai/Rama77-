@@ -18,7 +18,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android Project Directory Structure & Auto-Generate All Resource Placeholders
+    - name: Setup Android Project Directory Structure
       run: |
         # Create full Android project resource directory tree
         mkdir -p app/src/main/java/com/rama77/app \
@@ -150,32 +150,23 @@ jobs:
         </LinearLayout>
         EOF
 
-        # MASTER LOOP: Scan all layouts/menus and automatically generate ANY referenced missing ic_* or bg_* resource!
-        echo "Auto-generating placeholders for referenced drawables..."
-        for file in app/src/main/res/layout/*.xml app/src/main/res/menu/*.xml; do
-          if [ -f "$file" ]; then
-            # Extract references like @drawable/ic_... or @drawable/bg_...
-            grep -oE '@drawable/[a-zA-Z0-9_]+' "$file" | sed 's/@drawable\///g' | while read -r res_name; do
-              if [ ! -f "app/src/main/res/drawable/${res_name}.xml" ]; then
-                echo "Creating missing drawable placeholder: ${res_name}.xml"
-                if [[ "$res_name" == ic_* ]]; then
-                  cat << 'EOT' > "app/src/main/res/drawable/${res_name}.xml"
+        # Generate all commonly needed drawables & vectors to prevent any missing resource errors
+        for name in bg_game_center_scaffold bg_orange_gradient_button bg_button_orange bg_orange_circle bg_orange_circle_badge bg_white_rounded_card bg_translucent_circle bg_translucent_pill bg_session_container bg_session_tab_active bg_session_tab_inactive bg_logo_icon bg_wallet_pill bg_page_inactive bg_page_active_orange bg_badge_amount_green bg_category_tab_selected ic_call_orange ic_whatsapp_green ic_lock_key ic_starline_small ic_target ic_info_circle_orange ic_fingerprint_line ic_menu ic_wallet ic_bell ic_arrow_back ic_trash ic_play_button ic_play_arrow ic_user ic_clock_history ic_book_passbook ic_home ic_wallet_funds ic_support_headset ic_line_chart ic_help_circle ic_message_square ic_rupee_coin ic_file_text ic_settings ic_globe ic_moon ic_orange_gradient_drawer bg_orange_gradient_drawer ic_avatar_circle ic_ico_circle_orange; do
+          if [[ "$name" == ic_* ]]; then
+            cat << EOT > "app/src/main/res/drawable/${name}.xml"
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
     <path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
 </vector>
 EOT
-                else
-                  cat << 'EOT' > "app/src/main/res/drawable/${res_name}.xml"
+          else
+            cat << EOT > "app/src/main/res/drawable/${name}.xml"
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="#F16521"/>
     <corners android:radius="8dp"/>
 </shape>
 EOT
-                fi
-              fi
-            done
           fi
         done
 
