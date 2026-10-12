@@ -18,28 +18,185 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Quick Build Setup & Compile
+    - name: Setup Android Project Directory Structure & Generate Placeholders
       run: |
-        mkdir -p app/src/main/res/drawable app/src/main/res/values app/src/main/java/com/rama77/app
+        # Ensure all required folders exist first
+        mkdir -p app/src/main/java/com/rama77/app \
+                 app/src/main/res/layout \
+                 app/src/main/res/values \
+                 app/src/main/res/drawable \
+                 app/src/main/res/color \
+                 app/src/main/res/menu \
+                 app/src/main/res/mipmap-anydpi-v26 \
+                 app/src/main/res/xml \
+                 gradle
         
-        echo "android.useAndroidX=true" > gradle.properties
-        echo "android.enableJetifier=true" >> gradle.properties
+        cat << 'EOF' > gradle.properties
+        android.useAndroidX=true
+        android.enableJetifier=true
+        org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+        EOF
 
-        echo '<resources><style name="MpinBoxStyle" parent="Widget.AppCompat.EditText"/></resources>' > app/src/main/res/values/styles.xml
-        
-        VECTOR='<vector xmlns:android="http://schemas.android.com/apk/res/android" width="24dp" height="24dp" viewportWidth="24" viewportHeight="24"><path android:fillColor="#F16521" android:pathData="M12,2L2,22h20L12,2z"/></vector>'
-        echo "$VECTOR" > app/src/main/res/drawable/ic_launcher_background.xml
-        
-        # Duplicate vector for common missing drawables automatically
-        for name in bg_orange_gradient_button bg_button_orange bg_play_button ic_arrow_back ic_menu ic_wallet ic_bell ic_user ic_home ic_settings ic_share ic_log_out ic_dice_all ic_dice_1 ic_dice_2 ic_boxes; do
-          echo "$VECTOR" > "app/src/main/res/drawable/${name}.xml"
+        # Clean strings.xml & helper text
+        [ -f strings.xml ] && sed -i "s/Don't/Don\\\'t/g" strings.xml
+        for f in *.xml; do
+          [ -f "$f" ] && sed -i 's/app:helperTextColor="[^"]*"//g' "$f"
         done
 
-        # Move root files into correct project structure
-        [ -f build.gradle.kts ] && mv build.gradle.kts app/
-        for f in *.kt; do [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/; done
-        for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/layout/; done
+        # Clean fragment_support.xml
+        cat << 'EOF' > fragment_support.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#121212">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Support and Help"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        EOF
 
+        # Backup & Extraction Rules
+        cat << 'EOF' > app/src/main/res/xml/backup_rules.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <full-backup-content></full-backup-content>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/xml/data_extraction_rules.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <data-extraction-rules>
+            <cloud-backup />
+        </data-extraction-rules>
+        EOF
+
+        # Styles & Color Selectors
+        cat << 'EOF' > app/src/main/res/values/styles.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <resources>
+            <style name="MpinBoxStyle" parent="Widget.AppCompat.EditText">
+                <item name="android:layout_width">48dp</item>
+                <item name="android:layout_height">56dp</item>
+                <item name="android:gravity">center</item>
+                <item name="android:inputType">numberPassword</item>
+                <item name="android:maxLength">1</item>
+                <item name="android:textSize">20sp</item>
+                <item name="android:textStyle">bold</item>
+            </style>
+        </resources>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/color/selector_nav_color.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <selector xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:state_checked="true" android:color="#F16521" />
+            <item android:color="#8E8E93" />
+        </selector>
+        EOF
+
+        # Item layout
+        cat << 'EOF' > app/src/main/res/layout/item_funds_menu.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:padding="12dp">
+            <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF"/>
+        </LinearLayout>
+        EOF
+
+        # Generate Drawables & Icons
+        DRAWABLE_DIR="app/src/main/res/drawable"
+        VECTOR_XML='<?xml version="1.0" encoding="utf-8"?><vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"><path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/></vector>'
+        SHAPE_XML='<?xml version="1.0" encoding="utf-8"?><shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#F16521"/><corners android:radius="8dp"/></shape>'
+
+        for name in bg_game_center_scaffold bg_orange_gradient_button bg_button_orange bg_orange_circle bg_orange_circle_badge bg_white_rounded_card bg_translucent_circle bg_translucent_pill bg_session_container bg_session_tab_active bg_session_tab_inactive bg_logo_icon bg_wallet_pill bg_page_inactive bg_page_active_orange bg_badge_amount_green bg_category_tab_selected bg_orange_gradient_drawer bg_play_button bg_avatar_circle bg_play_button_disabled; do
+          echo "$SHAPE_XML" > "$DRAWABLE_DIR/${name}.xml"
+        done
+
+        for name in ic_dice_all ic_dice_1 ic_dice_2 ic_boxes ic_card_single ic_card_double ic_card_triple ic_gauge ic_brackets ic_users ic_layout_grid ic_call_orange ic_whatsapp_green ic_lock_key ic_starline_small ic_target ic_info_circle_orange ic_fingerprint_line ic_menu ic_wallet ic_bell ic_arrow_back ic_trash ic_play_button ic_play_arrow ic_user ic_clock_history ic_book_passbook ic_home ic_wallet_funds ic_support_headset ic_line_chart ic_help_circle ic_message_square ic_rupee_coin ic_file_text ic_settings ic_globe ic_moon ic_orange_gradient_drawer ic_avatar_circle ic_ico_circle_orange ic_share ic_log_out; do
+          echo "$VECTOR_XML" > "$DRAWABLE_DIR/${name}.xml"
+        done
+
+        # Kotlin Placeholders
+        KT_DIR="app/src/main/java/com/rama77/app"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class ChartsActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/ChartsActivity.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class ChangeMpinActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/ChangeMpinActivity.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class GameRatesActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/GameRatesActivity.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class SettingsActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/SettingsActivity.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class HistoryFragment : Fragment() {}" > "$KT_DIR/HistoryFragment.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class PassbookFragment : Fragment() {}" > "$KT_DIR/PassbookFragment.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class FundsFragment : Fragment() {}" > "$KT_DIR/FundsFragment.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class SupportFragment : Fragment() {}" > "$KT_DIR/SupportFragment.kt"
+        echo -e "package com.rama77.app\nopen class SeriesTabAdapter {}" > "$KT_DIR/SeriesTabAdapter.kt"
+
+        # Launcher Icons
+        cat << 'EOF' > app/src/main/res/drawable/ic_launcher_background.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+            <path android:fillColor="#F16521" android:pathData="M0,0h108v108h-108z"/>
+        </vector>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+            <background android:drawable="@drawable/ic_launcher_background" />
+            <foreground android:drawable="@drawable/ic_launcher_background" />
+        </adaptive-icon>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+            <background android:drawable="@drawable/ic_launcher_background" />
+            <foreground android:drawable="@drawable/ic_launcher_background" />
+        </adaptive-icon>
+        EOF
+
+        # Move source files safely
+        [ -f libs.versions.toml ] && mv libs.versions.toml gradle/
+        
+        for f in *.kt; do
+          [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/
+        done
+        
+        for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do
+          [ -f "$f" ] && mv "$f" app/src/main/res/layout/
+        done
+
+        for f in bottom_nav_menu.xml drawer_nav_menu.xml; do
+          [ -f "$f" ] && mv "$f" app/src/main/res/menu/
+        done
+        
+        for f in bg_*.xml ic_*.xml; do
+          [ -f "$f" ] && mv "$f" app/src/main/res/drawable/
+        done
+        
+        [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/
+        [ -f colors.xml ] && mv colors.xml app/src/main/res/values/
+        [ -f strings.xml ] && mv strings.xml app/src/main/res/values/
+        [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
+        
+        [ -f build.gradle.kts ] && mv build.gradle.kts app/
+        
+        cat << 'EOF' > build.gradle.kts
+        plugins {
+            alias(libs.plugins.android.application) apply false
+            alias(libs.plugins.kotlin.android) apply false
+        }
+        EOF
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: Build Android APK
+      run: |
         gradle assembleDebug
 
     - name: Upload APK
