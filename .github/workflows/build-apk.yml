@@ -58,18 +58,25 @@ jobs:
         echo "android.enableJetifier=true" >> gradle.properties
         echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" >> gradle.properties
 
-    - name: 2. Generate XML Resources & Clean Broken Tags
+    - name: 2. Generate Clean XML Resources
       run: |
         [ -f strings.xml ] && sed -i "s/Don't/Don\\\'t/g" strings.xml
         
-        # Aggressively fix any malformed CardView attributes or broken ampersands across all XML files
-        for f in *.xml; do 
-          if [ -f "$f" ]; then
-            sed -i 's/app:helperTextColor="[^"]*"//g' "$f"
-            sed -i 's/&app:[^[:space:]>]*//g' "$f"
-            sed -i 's/cardCornerRadius&app:[^[:space:]>]*//g' "$f"
-          fi
-        done
+        # Override corrupted fragment_support.xml directly with a valid clean layout
+        cat << 'EOF' > fragment_support.xml
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Support"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"/>
+        </LinearLayout>
+        EOF
 
         cat << 'EOF' > app/src/main/res/values/styles.xml
         <resources>
@@ -146,12 +153,7 @@ jobs:
     - name: 4. Move Files & Build APK
       run: |
         for f in *.kt; do [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/; done
-        for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do 
-          if [ -f "$f" ]; then
-            sed -i 's/app:helperTextColor="[^"]*"//g; s/&app:[^[:space:]>]*//g; s/cardCornerRadius&app:[^[:space:]>]*//g' "$f"
-            mv "$f" app/src/main/res/layout/
-          fi
-        done
+        for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/layout/; done
         for f in bottom_nav_menu.xml drawer_nav_menu.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/menu/; done
         for f in bg_*.xml ic_*.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/drawable/; done
         [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/
