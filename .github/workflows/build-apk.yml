@@ -20,7 +20,6 @@ jobs:
 
     - name: Setup Android Project Directory Structure & Generate Placeholders
       run: |
-        # Ensure all required folders exist first
         mkdir -p app/src/main/java/com/rama77/app \
                  app/src/main/res/layout \
                  app/src/main/res/values \
@@ -123,17 +122,71 @@ jobs:
           echo "$VECTOR_XML" > "$DRAWABLE_DIR/${name}.xml"
         done
 
-        # Kotlin Placeholders
+        # Kotlin Placeholders & Adapters
         KT_DIR="app/src/main/java/com/rama77/app"
-        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class ChartsActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/ChartsActivity.kt"
-        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class ChangeMpinActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/ChangeMpinActivity.kt"
-        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class GameRatesActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/GameRatesActivity.kt"
-        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class SettingsActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/SettingsActivity.kt"
-        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class HistoryFragment : Fragment() {}" > "$KT_DIR/HistoryFragment.kt"
-        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class PassbookFragment : Fragment() {}" > "$KT_DIR/PassbookFragment.kt"
-        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class FundsFragment : Fragment() {}" > "$KT_DIR/FundsFragment.kt"
-        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class SupportFragment : Fragment() {}" > "$KT_DIR/SupportFragment.kt"
-        echo -e "package com.rama77.app\nopen class SeriesTabAdapter {}" > "$KT_DIR/SeriesTabAdapter.kt"
+        
+        cat << 'EOF' > "$KT_DIR/ChartsActivity.kt"
+        package com.rama77.app
+        import android.os.Bundle
+        import androidx.appcompat.app.AppCompatActivity
+        open class ChartsActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }
+        EOF
+
+        cat << 'EOF' > "$KT_DIR/ChangeMpinActivity.kt"
+        package com.rama77.app
+        import android.os.Bundle
+        import androidx.appcompat.app.AppCompatActivity
+        open class ChangeMpinActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }
+        EOF
+
+        cat << 'EOF' > "$KT_DIR/GameRatesActivity.kt"
+        package com.rama77.app
+        import android.os.Bundle
+        import androidx.appcompat.app.AppCompatActivity
+        open class GameRatesActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }
+        EOF
+
+        cat << 'EOF' > "$KT_DIR/SettingsActivity.kt"
+        package com.rama77.app
+        import android.os.Bundle
+        import androidx.appcompat.app.AppCompatActivity
+        open class SettingsActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }
+        EOF
+
+        cat << 'EOF' > "$KT_DIR/HistoryFragment.kt"
+        package com.rama77.app
+        import androidx.fragment.app.Fragment
+        open class HistoryFragment : Fragment() {}
+        EOF
+
+        cat << 'EOF' > "$KT_DIR/PassbookFragment.kt"
+        package com.rama77.app
+        import androidx.fragment.app.Fragment
+        open class PassbookFragment : Fragment() {}
+        EOF
+
+        cat << 'EOF' > "$KT_DIR/FundsFragment.kt"
+        package com.rama77.app
+        import androidx.fragment.app.Fragment
+        open class FundsFragment : Fragment() {}
+        EOF
+
+        cat << 'EOF' > "$KT_DIR/SupportFragment.kt"
+        package com.rama77.app
+        import androidx.fragment.app.Fragment
+        open class SupportFragment : Fragment() {}
+        EOF
+
+        cat << 'EOF' > "$KT_DIR/SeriesTabAdapter.kt"
+        package com.rama77.app
+        import androidx.fragment.app.Fragment
+        import androidx.fragment.app.FragmentActivity
+        import androidx.viewpager2.adapter.FragmentStateAdapter
+        class SeriesTabAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
+            override fun getItemCount(): Int = 0
+            override fun createFragment(position: Int): Fragment = Fragment()
+        }
+        EOF
 
         # Launcher Icons
         cat << 'EOF' > app/src/main/res/drawable/ic_launcher_background.xml
