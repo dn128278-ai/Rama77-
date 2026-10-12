@@ -23,7 +23,7 @@ jobs:
       with:
         gradle-version: '8.6'
 
-    - name: 1. Auto-Move Files & Generate Clean Layouts
+    - name: 1. Auto-Move Files & Generate All Secondary Resources
       run: |
         mkdir -p app/src/main/java/com/rama77/app/network/model \
                  app/src/main/java/com/rama77/app/network/sync \
@@ -37,6 +37,7 @@ jobs:
                  app/src/main/java/com/rama77/app/ui/gamecenter \
                  app/src/main/res/layout \
                  app/src/main/res/values \
+                 app/src/main/res/color \
                  app/src/main/res/drawable \
                  app/src/main/res/menu \
                  app/src/main/res/xml \
@@ -65,107 +66,96 @@ jobs:
         [ -f Matka777SyncManager.kt ] && mv Matka777SyncManager.kt app/src/main/java/com/rama77/app/network/sync/
         [ -f MainActivity.kt ] && mv MainActivity.kt app/src/main/java/com/rama77/app/
 
-        # Remove existing fragment_support.xml if moved from root
+        # Clean corrupted fragment_support
         rm -f fragment_support.xml app/src/main/res/layout/fragment_support.xml
 
-        # Move remaining XML Layouts & Menus
+        # Move XML Layouts & Drawables
         for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/layout/; done
         [ -f nav_header_main.xml ] && mv nav_header_main.xml app/src/main/res/layout/
         for f in bottom_nav_menu.xml drawer_nav_menu.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/menu/; done
-        for f in *.xml; do [ -f "$f" ] && [[ "$f" =~ ^(bg_|ic_|round_) ]] && mv "$f" app/src/main/res/drawable/; done
+        for f in *.xml; do [ -f "$f" ] && [[ "$f" =~ ^(bg_\vert{}ic_\vert{}round_) ]] && mv "$f" app/src/main/res/drawable/; done
         
         [ -f colors.xml ] && mv colors.xml app/src/main/res/values/
         [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
 
-        # Clean fragment_support.xml overwrite with proper namespaces
-        cat << 'EOF' > app/src/main/res/layout/fragment_support.xml
+        # Remove helperTextColor from activity_register.xml to avoid attribute error
+        if [ -f app/src/main/res/layout/activity_register.xml ]; then
+            sed -i '/helperTextColor/d' app/src/main/res/layout/activity_register.xml
+        fi
+
+        # Generate item_funds_menu.xml
+        cat << 'EOF' > app/src/main/res/layout/item_funds_menu.xml
         <?xml version="1.0" encoding="utf-8"?>
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#EDEDED"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:padding="20dp">
-            
-            <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginTop="20dp"
-                android:src="@drawable/ic_headset_support"
-                android:contentDescription="Support Headset" />
-            
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp">
             <TextView
+                android:id="@+id/tvFundsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Rama 77 Chat Support"
-                android:gravity="center"
-                android:textColor="#1F2937"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-            
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:letterSpacing="0.08"
-                android:text="SELECT AN ISSUE"
-                android:textColor="#6B7280"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-            
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardDepositIssue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Deposit Issue"
-                        android:textColor="#1F2937"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/bg_orange_circle"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_chevron_right"
-                        android:contentDescription="Next" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                android:text="Funds Item"
+                android:textColor="#000000"
+                android:textSize="16sp" />
         </LinearLayout>
         EOF
 
-        # Generate styles.xml
-        cat << 'EOF' > app/src/main/res/values/styles.xml
-        <resources>
-            <style name="MpinBoxStyle">
-                <item name="android:layout_width">45dp</item>
-                <item name="android:layout_height">50dp</item>
-                <item name="android:gravity">center</item>
-                <item name="android:inputType">numberPassword</item>
-                <item name="android:maxLength">1</item>
-                <item name="android:textSize">20sp</item>
-                <item name="android:textStyle">bold</item>
-                <item name="android:background">@android:drawable/editbox_background</item>
-            </style>
-        </resources>
+        # Generate selector_nav_color.xml
+        cat << 'EOF' > app/src/main/res/color/selector_nav_color.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <selector xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:color="#FF7A00" android:state_checked="true" />
+            <item android:color="#6B7280" />
+        </selector>
         EOF
 
-        # Drawables Generation
+        # Generate missing drawables
+        cat << 'EOF' > app/src/main/res/drawable/bg_white_rounded_card.xml
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="#FFFFFF"/>
+            <corners android:radius="12dp"/>
+        </shape>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/bg_button_orange.xml
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="#FF7A00"/>
+            <corners android:radius="10dp"/>
+        </shape>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/ic_call_orange.xml
+        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <path android:fillColor="#FF7A00" android:pathData="M6.62,10.79c1.44,2.83 3.76,5.14 6.59,6.59l2.2,-2.2c0.27,-0.27 0.67,-0.36 1.02,-0.24 1.12,0.37 2.33,0.57 3.57,0.57 0.55,0 1,0.45 1,1V20c0,0.55 -0.45,1 -1,1 -9.39,0 -17,-7.61 -17,-17 0,-0.55 0.45,-1 1,-1h3.5c0.55,0 1,0.45 1,1 0,1.25 0.2,2.45 0.57,3.57 0.11,0.35 0.03,0.74 -0.24,1.02l-2.2,2.2z"/>
+        </vector>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/ic_lock_key.xml
+        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <path android:fillColor="#FF7A00" android:pathData="M18,8h-1V6c0,-2.76 -2.24,-5 -5,-5S7,3.24 7,6v2H6c-1.1,0 -2,0.9 -2,2v10c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2V10c0,-1.1 -0.9,-2 -2,-2zm-6,9c-1.1,0 -2,-0.9 -2,-2s0.9,-2 2,-2 2,0.9 2,2 -0.9,2 -2,2zm3.1,-9H8.9V6c0,-1.71 1.39,-3.1 3.1,-3.1 1.71,0 3.1,1.39 3.1,3.1v2z"/>
+        </vector>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/ic_starline_small.xml
+        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <path android:fillColor="#FF7A00" android:pathData="M12,17.27L18.18,21l-1.64,-7.03L22,9.24l-7.19,-0.61L12,2 9.19,8.63 2,9.24l5.46,4.73L5.82,21z"/>
+        </vector>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/ic_whatsapp_green.xml
+        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <path android:fillColor="#25D366" android:pathData="M12,2C6.48,2 2,6.48 2,12c0,1.82 0.49,3.53 1.35,5L2,22l5.13,-1.33C8.55,21.52 10.22,22 12,22c5.52,0 10,-4.48 10,-10S17.52,2 12,2z"/>
+        </vector>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/drawable/ic_bell.xml
+        <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <path android:fillColor="#FF7A00" android:pathData="M12,22c1.1,0 2,-0.9 2,-2h-4c0,1.1 0.89,2 2,2zm6,-6v-5c0,-3.07 -1.64,-5.64 -4.5,-6.32V4c0,-0.83 -0.67,-1.5 -1.5,-1.5s-1.5,0.67 -1.5,1.5v0.68C7.63,5.36 6,7.92 6,11v5l-2,2v1h16v-1l-2,-2z"/>
+        </vector>
+        EOF
+
+        # Base Drawables
         cat << 'EOF' > app/src/main/res/drawable/bg_orange_gradient_button.xml
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <gradient android:startColor="#FF7A00" android:endColor="#FF5500" android:angle="45"/>
@@ -260,6 +250,94 @@ jobs:
         <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
             <solid android:color="#FF7A00"/>
         </shape>
+        EOF
+
+        # Clean fragment_support.xml
+        cat << 'EOF' > app/src/main/res/layout/fragment_support.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#EDEDED"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="20dp">
+            
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/ic_headset_support"
+                android:contentDescription="Support Headset" />
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Rama 77 Chat Support"
+                android:gravity="center"
+                android:textColor="#1F2937"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:letterSpacing="0.08"
+                android:text="SELECT AN ISSUE"
+                android:textColor="#6B7280"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+            
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardDepositIssue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="20dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Deposit Issue"
+                        android:textColor="#1F2937"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_orange_circle"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_chevron_right"
+                        android:contentDescription="Next" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+        EOF
+
+        # Generate styles.xml
+        cat << 'EOF' > app/src/main/res/values/styles.xml
+        <resources>
+            <style name="MpinBoxStyle">
+                <item name="android:layout_width">45dp</item>
+                <item name="android:layout_height">50dp</item>
+                <item name="android:gravity">center</item>
+                <item name="android:inputType">numberPassword</item>
+                <item name="android:maxLength">1</item>
+                <item name="android:textSize">20sp</item>
+                <item name="android:textStyle">bold</item>
+                <item name="android:background">@android:drawable/editbox_background</item>
+            </style>
+        </resources>
         EOF
 
         # Clean strings.xml
@@ -387,7 +465,7 @@ jobs:
             namespace = "com.rama77.app"
             compileSdk = 34
             defaultConfig {
-                applicationId = "com.rama77.app"
+              applicationId = "com.rama77.app"
                 minSdk = 24
                 targetSdk = 34
                 versionCode = 2
@@ -438,4 +516,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: RAMA77-Native-APK
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: app/build/outputs/apk/debug/app-debug.apk  
