@@ -58,12 +58,17 @@ jobs:
         echo "android.enableJetifier=true" >> gradle.properties
         echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" >> gradle.properties
 
-    - name: 2. Generate XML Resources & Fix Attributes
+    - name: 2. Generate XML Resources & Clean Broken Tags
       run: |
         [ -f strings.xml ] && sed -i "s/Don't/Don\\\'t/g" strings.xml
         
+        # Aggressively fix any malformed CardView attributes or broken ampersands across all XML files
         for f in *.xml; do 
-          [ -f "$f" ] && sed -i 's/app:helperTextColor="[^"]*"//g; s/app:cardCornerRadius&app:[^"]*//g; s/&app:[^"]*//g' "$f"
+          if [ -f "$f" ]; then
+            sed -i 's/app:helperTextColor="[^"]*"//g' "$f"
+            sed -i 's/&app:[^[:space:]>]*//g' "$f"
+            sed -i 's/cardCornerRadius&app:[^[:space:]>]*//g' "$f"
+          fi
         done
 
         cat << 'EOF' > app/src/main/res/values/styles.xml
@@ -138,12 +143,12 @@ jobs:
         }
         EOF
 
-    - name: 4. Build APK with Gradle 8.5
+    - name: 4. Move Files & Build APK
       run: |
         for f in *.kt; do [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/; done
         for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do 
           if [ -f "$f" ]; then
-            sed -i 's/app:helperTextColor="[^"]*"//g; s/app:cardCornerRadius&app:[^"]*//g; s/&app:[^"]*//g' "$f"
+            sed -i 's/app:helperTextColor="[^"]*"//g; s/&app:[^[:space:]>]*//g; s/cardCornerRadius&app:[^[:space:]>]*//g' "$f"
             mv "$f" app/src/main/res/layout/
           fi
         done
