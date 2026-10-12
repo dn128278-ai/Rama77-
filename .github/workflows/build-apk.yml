@@ -28,7 +28,11 @@ jobs:
         set -e
         mkdir -p app/src/main/java/com/rama77/app/adapter app/src/main/res/layout app/src/main/res/drawable
         
-        echo 'include(":app")' > settings.gradle.kts
+        echo 'pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }' > settings.gradle.kts
+        echo 'dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }' >> settings.gradle.kts
+        echo 'rootProject.name = "Rama77"' >> settings.gradle.kts
+        echo 'include(":app")' >> settings.gradle.kts
+
         echo 'plugins { id("com.android.application") version "8.4.1" apply false; id("org.jetbrains.kotlin.android") version "1.9.24" apply false }' > build.gradle.kts
 
         echo 'package com.rama77.app.adapter
