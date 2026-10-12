@@ -1,4 +1,4 @@
- Build Native Android APK
+name: Build Native Android APK
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
       with:
         gradle-version: '8.6'
 
-    - name: 1. Auto-Move Files & Generate Bottom Nav Icons
+    - name: 1. Auto-Move Files & Generate All Resources
       run: |
         mkdir -p app/src/main/java/com/rama77/app/network/model \
                  app/src/main/java/com/rama77/app/network/sync \
@@ -44,7 +44,6 @@ jobs:
                  app/src/main/res/mipmap-anydpi-v26 \
                  gradle/wrapper
 
-        # Move source Kotlin files
         [ -f LoginActivity.kt ] && mv LoginActivity.kt app/src/main/java/com/rama77/app/ui/login/
         [ -f RegisterActivity.kt ] && mv RegisterActivity.kt app/src/main/java/com/rama77/app/ui/register/
         [ -f HomeFragment.kt ] && mv HomeFragment.kt app/src/main/java/com/rama77/app/ui/home/
@@ -80,7 +79,7 @@ jobs:
             sed -i '/helperTextColor/d' app/src/main/res/layout/activity_register.xml
         fi
 
-        # Generate missing bottom nav icons
+        # Generate all missing bottom nav and support icons
         cat << 'EOF' > app/src/main/res/drawable/ic_wallet_funds.xml
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
             <path android:fillColor="#FF7A00" android:pathData="M21,18v1c0,1.1 -0.9,2 -2,2H5c-1.11,0 -2,-0.9 -2,-2V5c0,-1.1 0.89,-2 2,-2h14c1.1,0 2,0.9 2,2v1h-9c-1.11,0 -2,0.9 -2,2v8c0,1.1 0.89,2 2,2h9zM12,16h10V8H12v8zm4,-2.5c-.83,0 -1.5,-0.67 -1.5,-1.5s0.67,-1.5 1.5,-1.5 1.5,0.67 1.5,1.5 -0.67,1.5 -1.5,1.5z"/>
@@ -93,7 +92,6 @@ jobs:
         </vector>
         EOF
 
-        # All previous generated elements
         cat << 'EOF' > app/src/main/res/drawable/ic_home.xml
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
             <path android:fillColor="#FF7A00" android:pathData="M10,20v-6h4v6h5v-8h3L12,3 2,12h3v8z"/>
