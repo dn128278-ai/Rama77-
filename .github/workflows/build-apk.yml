@@ -151,14 +151,16 @@ jobs:
         import androidx.fragment.app.Fragment
         import androidx.fragment.app.FragmentActivity
         import androidx.viewpager2.adapter.FragmentStateAdapter
-        val Any.charts: View? get() = null
-        val Any.funds: View? get() = null
-        val Any.history: View? get() = null
-        val Any.mpin: View? get() = null
-        val Any.passbook: View? get() = null
-        val Any.rates: View? get() = null
-        val Any.settings: View? get() = null
-        val Any.support: View? get() = null
+        
+        val android.app.Activity.charts: View? get() = null
+        val android.app.Activity.funds: View? get() = null
+        val android.app.Activity.history: View? get() = null
+        val android.app.Activity.mpin: View? get() = null
+        val android.app.Activity.passbook: View? get() = null
+        val android.app.Activity.rates: View? get() = null
+        val android.app.Activity.settings: View? get() = null
+        val android.app.Activity.support: View? get() = null
+
         open class ChartsActivity : androidx.appcompat.app.AppCompatActivity()
         open class ChangeMpinActivity : androidx.appcompat.app.AppCompatActivity()
         open class GameRatesActivity : androidx.appcompat.app.AppCompatActivity()
@@ -235,6 +237,7 @@ jobs:
             implementation("androidx.constraintlayout:constraintlayout:2.1.4")
             implementation("androidx.viewpager2:viewpager2:1.0.0")
             implementation("androidx.cardview:cardview:1.0.0")
+            implementation("androidx.biometric:biometric:1.1.0")
             implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
             implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
