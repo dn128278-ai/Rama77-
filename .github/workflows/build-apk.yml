@@ -71,11 +71,12 @@ jobs:
         [ -f colors.xml ] && mv colors.xml app/src/main/res/values/
         [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
 
+        # Clean strings.xml without any conflicting apostrophes
         cat << 'EOF' > app/src/main/res/values/strings.xml
         <resources>
             <string name="app_name">RAMA77</string>
             <string name="mpin_login_title">MPIN Login</string>
-            <string name="enter_mpin_prompt">Please enter your 4-digit MPIN to\nlogin your account</string>
+            <string name="enter_mpin_prompt">Please enter your 4-digit MPIN to login your account</string>
             <string name="forgot_mpin">Forgot MPIN?</string>
             <string name="login_button">Login</string>
             <string name="min_deposit_limit">Current minimum deposit limit Rs. 300</string>
@@ -94,8 +95,8 @@ jobs:
             <string name="app_version">App Version: 2</string>
             <string name="new_registration">New Registration</string>
             <string name="register_now">Register Now</string>
-            <string name="dont_have_account">Don&apos;t have an account?</string>
-            <string name="already_have_account">Already have an account? Login</string>
+            <string name="dont_have_account">Not registered yet?</string>
+            <string name="already_have_account">Already registered? Login</string>
             <string name="mobile_number">Mobile Number</string>
             <string name="password">Password</string>
             <string name="promo_code">Promo Code (Optional)</string>
