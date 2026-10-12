@@ -18,7 +18,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android Project Directory Structure & Inject ALL Missing Drawables
+    - name: Setup Android Project Directory Structure & Inject Clean XMLs
       run: |
         # Create directories for app module and resource structure
         mkdir -p app/src/main/java/com/rama77/app app/src/main/res/layout app/src/main/res/values app/src/main/res/drawable app/src/main/res/color app/src/main/res/menu app/src/main/res/mipmap-anydpi-v26 app/src/main/res/xml gradle
@@ -30,24 +30,12 @@ jobs:
         org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
         EOF
 
-        # Escape special character in strings.xml
+        # Clean strings.xml
         if [ -f strings.xml ]; then
           sed -i "s/Don't/Don\\\'t/g" strings.xml
         fi
 
-        # Remove unsupported helperTextColor attribute from layout files
-        for f in *.xml; do
-          [ -f "$f" ] && sed -i 's/app:helperTextColor="[^"]*"//g' "$f"
-        done
-
-        # Clean AndroidManifest.xml
-        if [ -f AndroidManifest.xml ]; then
-          sed -i 's/package="[^"]*"//g' AndroidManifest.xml
-          sed -i 's/android:dataExtractionRules="[^"]*"//g' AndroidManifest.xml
-          sed -i 's/android:fullBackupContent="[^"]*"//g' AndroidManifest.xml
-        fi
-
-        # Clean override for fragment_support.xml to fix XML namespace error
+        # Overwrite fragment_support.xml with a clean, fully valid XML structure
         cat << 'EOF' > fragment_support.xml
         <?xml version="1.0" encoding="utf-8"?>
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -61,7 +49,7 @@ jobs:
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Support & Help"
+                android:text="Support and Help"
                 android:textColor="#FFFFFF"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -101,7 +89,7 @@ jobs:
         </LinearLayout>
         EOF
 
-        # Create dummy rules
+        # Create dummy backup and extraction rules
         cat << 'EOF' > app/src/main/res/xml/backup_rules.xml
         <?xml version="1.0" encoding="utf-8"?>
         <full-backup-content></full-backup-content>
@@ -114,7 +102,7 @@ jobs:
         </data-extraction-rules>
         EOF
 
-        # Values & Styles
+        # Styles & Attrs
         cat << 'EOF' > app/src/main/res/values/styles.xml
         <?xml version="1.0" encoding="utf-8"?>
         <resources>
@@ -127,15 +115,6 @@ jobs:
                 <item name="android:textSize">20sp</item>
                 <item name="android:textStyle">bold</item>
             </style>
-        </resources>
-        EOF
-
-        cat << 'EOF' > app/src/main/res/values/attrs.xml
-        <?xml version="1.0" encoding="utf-8"?>
-        <resources>
-            <declare-styleable name="CustomAttrs">
-                <attr name="helperTextColor" format="color"/>
-            </declare-styleable>
         </resources>
         EOF
 
@@ -286,7 +265,7 @@ jobs:
         </adaptive-icon>
         EOF
 
-        # Move Files Cleanly
+        # Move files cleanly
         [ -f libs.versions.toml ] && mv libs.versions.toml gradle/
         
         for f in *.kt; do
