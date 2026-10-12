@@ -162,6 +162,15 @@ jobs:
         val AppCompatActivity.settings: View? get() = null
         val AppCompatActivity.support: View? get() = null
 
+        val Fragment.charts: View? get() = null
+        val Fragment.funds: View? get() = null
+        val Fragment.history: View? get() = null
+        val Fragment.mpin: View? get() = null
+        val Fragment.passbook: View? get() = null
+        val Fragment.rates: View? get() = null
+        val Fragment.settings: View? get() = null
+        val Fragment.support: View? get() = null
+
         open class ChartsActivity : AppCompatActivity()
         open class ChangeMpinActivity : AppCompatActivity()
         open class GameRatesActivity : AppCompatActivity()
