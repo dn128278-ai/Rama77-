@@ -31,6 +31,14 @@ jobs:
                  app/src/main/res/drawable \
                  app/src/main/res/values
 
+        # Fix root build.gradle.kts to remove version catalog dependency error
+        cat << 'EOF' > build.gradle.kts
+        plugins {
+            id("com.android.application") version "8.4.1" apply false
+            id("org.jetbrains.kotlin.android") version "1.9.24" apply false
+        }
+        EOF
+
         # Create SeriesAdapter
         cat << 'EOF' > app/src/main/java/com/rama77/app/adapter/SeriesTabAdapter.kt
         package com.rama77.app.adapter
