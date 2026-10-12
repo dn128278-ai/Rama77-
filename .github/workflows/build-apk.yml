@@ -148,23 +148,24 @@ jobs:
         cat << 'EOF' > "$KT/MockExtensions.kt"
         package com.rama77.app
         import android.view.View
+        import androidx.appcompat.app.AppCompatActivity
         import androidx.fragment.app.Fragment
         import androidx.fragment.app.FragmentActivity
         import androidx.viewpager2.adapter.FragmentStateAdapter
-        
-        val android.app.Activity.charts: View? get() = null
-        val android.app.Activity.funds: View? get() = null
-        val android.app.Activity.history: View? get() = null
-        val android.app.Activity.mpin: View? get() = null
-        val android.app.Activity.passbook: View? get() = null
-        val android.app.Activity.rates: View? get() = null
-        val android.app.Activity.settings: View? get() = null
-        val android.app.Activity.support: View? get() = null
 
-        open class ChartsActivity : androidx.appcompat.app.AppCompatActivity()
-        open class ChangeMpinActivity : androidx.appcompat.app.AppCompatActivity()
-        open class GameRatesActivity : androidx.appcompat.app.AppCompatActivity()
-        open class SettingsActivity : androidx.appcompat.app.AppCompatActivity()
+        val AppCompatActivity.charts: View? get() = null
+        val AppCompatActivity.funds: View? get() = null
+        val AppCompatActivity.history: View? get() = null
+        val AppCompatActivity.mpin: View? get() = null
+        val AppCompatActivity.passbook: View? get() = null
+        val AppCompatActivity.rates: View? get() = null
+        val AppCompatActivity.settings: View? get() = null
+        val AppCompatActivity.support: View? get() = null
+
+        open class ChartsActivity : AppCompatActivity()
+        open class ChangeMpinActivity : AppCompatActivity()
+        open class GameRatesActivity : AppCompatActivity()
+        open class SettingsActivity : AppCompatActivity()
         open class HistoryFragment : Fragment()
         open class PassbookFragment : Fragment()
         open class FundsFragment : Fragment()
