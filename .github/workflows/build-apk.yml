@@ -18,7 +18,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android Project & Fix Placeholders
+    - name: Setup Android Project & Basic Placeholders
       run: |
         mkdir -p app/src/main/java/com/rama77/app \
                  app/src/main/res/layout \
@@ -109,81 +109,21 @@ jobs:
         </LinearLayout>
         EOF
 
-        # GENERATE ALL DRAWABLES & ICONS INCLUDING ic_dice_2 AND ic_boxes
+        # Universal Fallback Drawable Generator
         DRAWABLE_DIR="app/src/main/res/drawable"
         VECTOR_XML='<?xml version="1.0" encoding="utf-8"?><vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"><path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/></vector>'
         SHAPE_XML='<?xml version="1.0" encoding="utf-8"?><shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#F16521"/><corners android:radius="8dp"/></shape>'
 
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_game_center_scaffold.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_orange_gradient_button.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_button_orange.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_orange_circle.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_orange_circle_badge.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_white_rounded_card.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_translucent_circle.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_translucent_pill.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_session_container.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_session_tab_active.xml"
-        echo "$DRAWABLE_DIR/bg_session_tab_inactive.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_logo_icon.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_wallet_pill.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_page_inactive.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_page_active_orange.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_badge_amount_green.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_category_tab_selected.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_orange_gradient_drawer.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_play_button.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_avatar_circle.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_play_button_disabled.xml"
+        for name in bg_game_center_scaffold bg_orange_gradient_button bg_button_orange bg_orange_circle bg_orange_circle_badge bg_white_rounded_card bg_translucent_circle bg_translucent_pill bg_session_container bg_session_tab_active bg_session_tab_inactive bg_logo_icon bg_wallet_pill bg_page_inactive bg_page_active_orange bg_badge_amount_green bg_category_tab_selected bg_orange_gradient_drawer bg_play_button bg_avatar_circle bg_play_button_disabled; do
+          echo "$SHAPE_XML" > "$DRAWABLE_DIR/${name}.xml"
+        done
 
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_dice_all.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_dice_1.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_dice_2.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_boxes.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_card_single.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_card_double.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_card_triple.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_gauge.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_brackets.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_users.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_layout_grid.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_call_orange.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_whatsapp_green.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_lock_key.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_starline_small.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_target.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_info_circle_orange.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_fingerprint_line.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_menu.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_wallet.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_bell.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_arrow_back.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_trash.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_play_button.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_play_arrow.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_user.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_clock_history.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_book_passbook.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_home.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_wallet_funds.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_support_headset.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_line_chart.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_help_circle.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_message_square.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_rupee_coin.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_file_text.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_settings.xml"
-        echo "$DRAWABLE_DIR/ic_globe.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_moon.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_orange_gradient_drawer.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_avatar_circle.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_ico_circle_orange.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_share.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_log_out.xml"
+        for name in ic_dice_all ic_dice_1 ic_dice_2 ic_boxes ic_card_single ic_card_double ic_card_triple ic_gauge ic_brackets ic_users ic_layout_grid ic_call_orange ic_whatsapp_green ic_lock_key ic_starline_small ic_target ic_info_circle_orange ic_fingerprint_line ic_menu ic_wallet ic_bell ic_arrow_back ic_trash ic_play_button ic_play_arrow ic_user ic_clock_history ic_book_passbook ic_home ic_wallet_funds ic_support_headset ic_line_chart ic_help_circle ic_message_square ic_rupee_coin ic_file_text ic_settings ic_globe ic_moon ic_orange_gradient_drawer ic_avatar_circle ic_ico_circle_orange ic_share ic_log_out; do
+          echo "$VECTOR_XML" > "$DRAWABLE_DIR/${name}.xml"
+        done
 
-        # GENERATE CORRECTLY NAMED KOTLIN PLACEHOLDER CLASSES
+        # Kotlin Placeholders
         KT_DIR="app/src/main/java/com/rama77/app"
-
         echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class ChartsActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/ChartsActivity.kt"
         echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class ChangeMpinActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/ChangeMpinActivity.kt"
         echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class GameRatesActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/GameRatesActivity.kt"
