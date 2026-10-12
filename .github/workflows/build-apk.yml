@@ -177,7 +177,6 @@ jobs:
       run: |
         for f in *.kt; do [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/; done
         
-        # Clean helperTextColor and invalid attributes from all XML files before moving
         for f in *.xml; do
           if [ -f "$f" ]; then
             sed -i 's/app:helperTextColor="[^"]*"//g; s/app:helperTextColor=[^[:space:]>]*//g' "$f"
@@ -216,6 +215,10 @@ jobs:
                 versionCode = 1
                 versionName = "1.0"
             }
+            buildFeatures {
+                viewBinding = true
+                dataBinding = true
+            }
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_17
                 targetCompatibility = JavaVersion.VERSION_17
@@ -231,6 +234,9 @@ jobs:
             implementation("androidx.constraintlayout:constraintlayout:2.1.4")
             implementation("androidx.viewpager2:viewpager2:1.0.0")
             implementation("androidx.cardview:cardview:1.0.0")
+            implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+            implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
         }
         EOF
 
