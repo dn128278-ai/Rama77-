@@ -18,7 +18,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: 1. Create Directories & Properties
+    - name: 1. Create Directories & Settings
       run: |
         mkdir -p app/src/main/java/com/rama77/app \
                  app/src/main/res/layout \
@@ -30,6 +30,26 @@ jobs:
                  app/src/main/res/xml \
                  gradle
         
+        # Ensure root settings.gradle.kts exists to recognize app module
+        cat << 'EOF' > settings.gradle.kts
+        pluginManagement {
+            repositories {
+                google()
+                mavenCentral()
+                gradlePluginPortal()
+            }
+        }
+        dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+            repositories {
+                google()
+                mavenCentral()
+            }
+        }
+        rootProject.name = "RAMA77"
+        include(":app")
+        EOF
+
         echo "android.useAndroidX=true" > gradle.properties
         echo "android.enableJetifier=true" >> gradle.properties
         echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" >> gradle.properties
