@@ -23,7 +23,7 @@ jobs:
       with:
         gradle-version: '8.6'
 
-    - name: 1. Auto-Move Files & Generate All Resources
+    - name: 1. Auto-Move Files & Generate All Remaining Resources
       run: |
         mkdir -p app/src/main/java/com/rama77/app/network/model \
                  app/src/main/java/com/rama77/app/network/sync \
@@ -79,7 +79,45 @@ jobs:
             sed -i '/helperTextColor/d' app/src/main/res/layout/activity_register.xml
         fi
 
-        # Generate all missing bottom nav and support icons
+        # Generate missing SeriesTabAdapter.kt to fix compilation error
+        cat << 'EOF' > app/src/main/java/com/rama77/app/adapter/SeriesTabAdapter.kt
+        package com.rama77.app.adapter
+
+        import android.view.LayoutInflater
+        import android.view.ViewGroup
+        import androidx.recyclerview.widget.RecyclerView
+        import com.rama77.app.databinding.ItemFundsMenuBinding
+
+        class SeriesTabAdapter(private val items: List<String>, private val onItemClick: (String) -> Unit) :
+            RecyclerView.Adapter<SeriesTabAdapter.ViewHolder>() {
+
+            class ViewHolder(val binding: ItemFundsMenuBinding) : RecyclerView.ViewHolder(binding.root)
+
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+                val binding = ItemFundsMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                return ViewHolder(binding)
+            }
+
+            override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+                val item = items[position]
+                holder.binding.tvFundsTitle.text = item
+                holder.itemView.setOnClickListener { onItemClick(item) }
+            }
+
+            override fun getItemCount() = items.size
+        }
+        EOF
+
+        # Generate missing GameCenter Activity vector icons
+        for icon in ic_card_single ic_card_double ic_card_triple ic_dice_2 ic_gauge ic_brackets ic_users ic_layout_grid ic_boxes; do
+            cat << EOF > app/src/main/res/drawable/${icon}.xml
+            <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+                <path android:fillColor="#FF7A00" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
+            </vector>
+            EOF
+        done
+
+        # All previous generated elements
         cat << 'EOF' > app/src/main/res/drawable/ic_wallet_funds.xml
         <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
             <path android:fillColor="#FF7A00" android:pathData="M21,18v1c0,1.1 -0.9,2 -2,2H5c-1.11,0 -2,-0.9 -2,-2V5c0,-1.1 0.89,-2 2,-2h14c1.1,0 2,0.9 2,2v1h-9c-1.11,0 -2,0.9 -2,2v8c0,1.1 0.89,2 2,2h9zM12,16h10V8H12v8zm4,-2.5c-.83,0 -1.5,-0.67 -1.5,-1.5s0.67,-1.5 1.5,-1.5 1.5,0.67 1.5,1.5 -0.67,1.5 -1.5,1.5z"/>
