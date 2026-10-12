@@ -23,15 +23,16 @@ jobs:
       with:
         gradle-version: '8.6'
 
-    - name: 1. Setup Project Structure & Build APK
+    - name: 1. Fix Project Structure & Build APK
       run: |
         set -e
+        
+        # Ensure app directory exists
         mkdir -p app/src/main/java/com/rama77/app/adapter \
                  app/src/main/res/layout \
-                 app/src/main/res/drawable \
-                 app/src/main/res/values
+                 app/src/main/res/drawable
 
-        # Ensure settings.gradle.kts exists so Gradle recognizes the 'app' module
+        # Force create proper settings.gradle.kts at root
         cat << 'EOF' > settings.gradle.kts
         pluginManagement {
             repositories {
@@ -51,7 +52,7 @@ jobs:
         include(":app")
         EOF
 
-        # Fix root build.gradle.kts
+        # Force create root build.gradle.kts
         cat << 'EOF' > build.gradle.kts
         plugins {
             id("com.android.application") version "8.4.1" apply false
@@ -59,7 +60,40 @@ jobs:
         }
         EOF
 
-        # Create SeriesAdapter
+        # Create basic app/build.gradle.kts if missing or broken
+        if [ ! -f app/build.gradle.kts ]; then
+            cat << 'EOF' > app/build.gradle.kts
+            plugins {
+                id("com.android.application")
+                id("org.jetbrains.kotlin.android")
+            }
+            android {
+                namespace = "com.rama77.app"
+                compileSdk = 34
+                defaultConfig {
+                    applicationId = "com.rama77.app"
+                    minSdk = 24
+                    targetSdk = 34
+                    versionCode = 2
+                    versionName = "2.0"
+                }
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                }
+                kotlinOptions {
+                    jvmTarget = "17"
+                }
+            }
+            dependencies {
+                implementation("androidx.core:core-ktx:1.13.1")
+                implementation("androidx.appcompat:appcompat:1.7.0")
+                implementation("com.google.android.material:material:1.12.0")
+            }
+            EOF
+        fi
+
+        # Create missing adapter
         cat << 'EOF' > app/src/main/java/com/rama77/app/adapter/SeriesTabAdapter.kt
         package com.rama77.app.adapter
         import android.view.LayoutInflater
@@ -78,7 +112,6 @@ jobs:
         }
         EOF
 
-        # Create item layout file
         cat << 'EOF' > app/src/main/res/layout/item_funds_menu.xml
         <?xml version="1.0" encoding="utf-8"?>
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -87,13 +120,8 @@ jobs:
         </LinearLayout>
         EOF
 
-        # Generate missing icons to prevent resource errors
-        for icon in ic_card_single ic_card_double ic_card_triple ic_dice_2 ic_gauge ic_brackets ic_users ic_layout_grid ic_boxes ic_dice_all ic_dice_1 ic_wallet_funds ic_support_headset ic_home ic_line_chart ic_help_circle ic_message_square ic_rupee_coin ic_file_text ic_settings ic_globe ic_moon ic_share ic_log_out ic_trash ic_target ic_info_circle_orange ic_play_arrow ic_user ic_clock_history ic_book_passbook ic_call_orange ic_lock_key ic_starline_small ic_whatsapp_green ic_bell ic_arrow_back ic_fingerprint_line ic_menu ic_wallet ic_headset_support ic_chevron_right; do
-            echo '<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"><path android:fillColor="#FF7A00" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/></vector>' > app/src/main/res/drawable/${icon}.xml
-        done
-
         gradle wrapper --gradle-version 8.6
-        gradle :app:assembleDebug --no-daemon
+        ./gradlew assembleDebug --no-daemon
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
