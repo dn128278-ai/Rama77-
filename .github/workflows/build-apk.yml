@@ -18,7 +18,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android Project & Create Placeholders
+    - name: Setup Android Project & Fix Placeholders
       run: |
         mkdir -p app/src/main/java/com/rama77/app \
                  app/src/main/res/layout \
@@ -109,7 +109,7 @@ jobs:
         </LinearLayout>
         EOF
 
-        # GENERATE ALL MISSING DRAWABLES & ICONS WITHOUT LOOPS
+        # GENERATE ALL DRAWABLES & ICONS INCLUDING ic_dice_2 AND ic_boxes
         DRAWABLE_DIR="app/src/main/res/drawable"
         VECTOR_XML='<?xml version="1.0" encoding="utf-8"?><vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"><path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/></vector>'
         SHAPE_XML='<?xml version="1.0" encoding="utf-8"?><shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#F16521"/><corners android:radius="8dp"/></shape>'
@@ -124,7 +124,7 @@ jobs:
         echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_translucent_pill.xml"
         echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_session_container.xml"
         echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_session_tab_active.xml"
-        echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_session_tab_inactive.xml"
+        echo "$DRAWABLE_DIR/bg_session_tab_inactive.xml"
         echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_logo_icon.xml"
         echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_wallet_pill.xml"
         echo "$SHAPE_XML" > "$DRAWABLE_DIR/bg_page_inactive.xml"
@@ -138,6 +138,8 @@ jobs:
 
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_dice_all.xml"
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_dice_1.xml"
+        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_dice_2.xml"
+        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_boxes.xml"
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_card_single.xml"
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_card_double.xml"
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_card_triple.xml"
@@ -171,7 +173,7 @@ jobs:
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_rupee_coin.xml"
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_file_text.xml"
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_settings.xml"
-        echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_globe.xml"
+        echo "$DRAWABLE_DIR/ic_globe.xml"
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_moon.xml"
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_orange_gradient_drawer.xml"
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_avatar_circle.xml"
@@ -179,19 +181,18 @@ jobs:
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_share.xml"
         echo "$VECTOR_XML" > "$DRAWABLE_DIR/ic_log_out.xml"
 
-        # GENERATE MISSING KOTLIN PLACEHOLDER CLASSES WITHOUT LOOPS
+        # GENERATE CORRECTLY NAMED KOTLIN PLACEHOLDER CLASSES
         KT_DIR="app/src/main/java/com/rama77/app"
-        KT_PLACEHOLDER='package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\n\nopen class PlaceholderActivity : AppCompatActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n    }\n}'
 
-        printf "$KT_PLACEHOLDER" > "$KT_DIR/ChartsActivity.kt"
-        printf "$KT_PLACEHOLDER" > "$KT_DIR/ChangeMpinActivity.kt"
-        printf "$KT_PLACEHOLDER" > "$KT_DIR/GameRatesActivity.kt"
-        printf "$KT_PLACEHOLDER" > "$KT_DIR/SettingsActivity.kt"
-        printf "$KT_PLACEHOLDER" > "$KT_DIR/HistoryFragment.kt"
-        printf "$KT_PLACEHOLDER" > "$KT_DIR/PassbookFragment.kt"
-        printf "$KT_PLACEHOLDER" > "$KT_DIR/FundsFragment.kt"
-        printf "$KT_PLACEHOLDER" > "$KT_DIR/SupportFragment.kt"
-        printf "$KT_PLACEHOLDER" > "$KT_DIR/SeriesTabAdapter.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class ChartsActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/ChartsActivity.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class ChangeMpinActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/ChangeMpinActivity.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class GameRatesActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/GameRatesActivity.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nopen class SettingsActivity : AppCompatActivity() { override fun onCreate(b: Bundle?) { super.onCreate(b) } }" > "$KT_DIR/SettingsActivity.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class HistoryFragment : Fragment() {}" > "$KT_DIR/HistoryFragment.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class PassbookFragment : Fragment() {}" > "$KT_DIR/PassbookFragment.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class FundsFragment : Fragment() {}" > "$KT_DIR/FundsFragment.kt"
+        echo -e "package com.rama77.app\nimport android.os.Bundle\nimport androidx.fragment.app.Fragment\nopen class SupportFragment : Fragment() {}" > "$KT_DIR/SupportFragment.kt"
+        echo -e "package com.rama77.app\nopen class SeriesTabAdapter {}" > "$KT_DIR/SeriesTabAdapter.kt"
 
         # Launcher Icons
         cat << 'EOF' > app/src/main/res/drawable/ic_launcher_background.xml
@@ -226,7 +227,7 @@ jobs:
         
         for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do
           [ -f "$f" ] && mv "$f" app/src/main/res/layout/
-        done
+        end
 
         for f in bottom_nav_menu.xml drawer_nav_menu.xml; do
           [ -f "$f" ] && mv "$f" app/src/main/res/menu/
