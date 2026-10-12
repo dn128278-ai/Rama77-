@@ -113,7 +113,8 @@ jobs:
 
     - name: 4. Move Files & Build APK
       run: |
-        [ -f build.gradle.kts ] && mv build.gradle.kts app/
+        rm -f build.gradle.kts
+        
         for f in *.kt; do [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/; done
         for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/layout/; done
         for f in bottom_nav_menu.xml drawer_nav_menu.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/menu/; done
@@ -123,7 +124,6 @@ jobs:
         [ -f strings.xml ] && mv strings.xml app/src/main/res/values/
         [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
 
-        # Direct plugins block to bypass unresolved 'libs' reference errors
         cat << 'EOF' > build.gradle.kts
         plugins {
             id("com.android.application") version "8.2.0" apply false
