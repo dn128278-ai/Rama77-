@@ -18,7 +18,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android Project & Fix All References
+    - name: Setup Android Project Directory Structure & Generate Placeholders
       run: |
         mkdir -p app/src/main/java/com/rama77/app \
                  app/src/main/res/layout \
@@ -122,16 +122,14 @@ jobs:
           echo "$VECTOR_XML" > "$DRAWABLE_DIR/${name}.xml"
         done
 
-        # COMPREHENSIVE KOTLIN MOCK EXTENSIONS TO SATISFY ALL UNRESOLVED REFERENCES
+        # Kotlin Mock Extensions & References
         KT_DIR="app/src/main/java/com/rama77/app"
-        
         cat << 'EOF' > "$KT_DIR/MockExtensions.kt"
         package com.rama77.app
         import android.view.View
         import androidx.fragment.app.Fragment
         import androidx.fragment.app.FragmentActivity
         import androidx.viewpager2.adapter.FragmentStateAdapter
-
         val Any.charts: View? get() = null
         val Any.funds: View? get() = null
         val Any.history: View? get() = null
@@ -140,17 +138,14 @@ jobs:
         val Any.rates: View? get() = null
         val Any.settings: View? get() = null
         val Any.support: View? get() = null
-
         open class ChartsActivity : androidx.appcompat.app.AppCompatActivity()
         open class ChangeMpinActivity : androidx.appcompat.app.AppCompatActivity()
         open class GameRatesActivity : androidx.appcompat.app.AppCompatActivity()
         open class SettingsActivity : androidx.appcompat.app.AppCompatActivity()
-        
         open class HistoryFragment : Fragment()
         open class PassbookFragment : Fragment()
         open class FundsFragment : Fragment()
         open class SupportFragment : Fragment()
-
         class SeriesTabAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
             override fun getItemCount(): Int = 0
             override fun createFragment(position: Int): Fragment = Fragment()
