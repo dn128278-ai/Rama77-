@@ -18,7 +18,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: 1. Create Directories & Settings
+    - name: 1. Create Directories & Setup Settings
       run: |
         mkdir -p app/src/main/java/com/rama77/app \
                  app/src/main/res/layout \
@@ -30,7 +30,7 @@ jobs:
                  app/src/main/res/xml \
                  gradle
         
-        # Ensure root settings.gradle.kts exists to recognize app module
+        # Root Settings file
         cat << 'EOF' > settings.gradle.kts
         pluginManagement {
             repositories {
@@ -133,7 +133,8 @@ jobs:
 
     - name: 4. Move Files & Build APK
       run: |
-        rm -f build.gradle.kts
+        # Move build file to app folder if exists
+        [ -f build.gradle.kts ] && mv build.gradle.kts app/
         
         for f in *.kt; do [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/; done
         for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/layout/; done
@@ -144,6 +145,7 @@ jobs:
         [ -f strings.xml ] && mv strings.xml app/src/main/res/values/
         [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
 
+        # Clean Root build file
         cat << 'EOF' > build.gradle.kts
         plugins {
             id("com.android.application") version "8.2.0" apply false
@@ -151,7 +153,8 @@ jobs:
         }
         EOF
 
-        gradle assembleDebug
+        # Explicitly build module task
+        gradle :app:assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
