@@ -28,7 +28,7 @@ jobs:
                  app/src/main/res/menu \
                  app/src/main/res/mipmap-anydpi-v26 \
                  app/src/main/res/xml \
-                 gradle
+                 gradle/wrapper
         
         cat << 'EOF' > settings.gradle.kts
         pluginManagement {
@@ -130,7 +130,7 @@ jobs:
         }
         EOF
 
-    - name: 4. Move Files & Build APK
+    - name: 4. Move Files & Build APK with Gradle 8.5
       run: |
         for f in *.kt; do [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/; done
         for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/layout/; done
@@ -141,7 +141,6 @@ jobs:
         [ -f strings.xml ] && mv strings.xml app/src/main/res/values/
         [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
 
-        # Clean root build file
         rm -f build.gradle.kts
         cat << 'EOF' > build.gradle.kts
         plugins {
@@ -150,7 +149,6 @@ jobs:
         }
         EOF
 
-        # Clean app-level build file to avoid version catalog errors
         cat << 'EOF' > app/build.gradle.kts
         plugins {
             id("com.android.application")
@@ -165,11 +163,6 @@ jobs:
                 targetSdk = 34
                 versionCode = 1
                 versionName = "1.0"
-            }
-            buildTypes {
-                release {
-                    isMinifyEnabled = false
-                }
             }
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_17
@@ -188,7 +181,9 @@ jobs:
         }
         EOF
 
-        gradle :app:assembleDebug
+        # Use gradle wrapper with stable version 8.5
+        gradle wrapper --gradle-version 8.5
+        ./gradlew :app:assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
