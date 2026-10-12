@@ -23,37 +23,41 @@ jobs:
       with:
         gradle-version: '8.6'
 
-    - name: Full Auto Setup & Build APK
+    - name: Build RAMA77 Full App APK
       run: |
         set -e
         
-        # 1. Clean everything to remove previous conflicting files
+        # Clean previous builds
         rm -rf app settings.gradle settings.gradle.kts build.gradle build.gradle.kts gradle.properties
 
-        # 2. Create clean directory structure
+        # Create directories
         mkdir -p app/src/main/java/com/rama77/app \
                  app/src/main/res/layout \
-                 app/src/main/res/values
+                 app/src/main/res/values \
+                 app/src/main/res/drawable
 
-        # 3. Create settings.gradle.kts
+        # settings.gradle.kts
         printf 'pluginManagement {\n    repositories {\n        google()\n        mavenCentral()\n        gradlePluginPortal()\n    }\n}\ndependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()\n        mavenCentral()\n    }\n}\nrootProject.name = "Rama77"\ninclude(":app")\n' > settings.gradle.kts
 
-        # 4. Create root build.gradle.kts
+        # root build.gradle.kts
         printf 'plugins {\n    id("com.android.application") version "8.4.1" apply false\n    id("org.jetbrains.kotlin.android") version "1.9.24" apply false\n}\n' > build.gradle.kts
 
-        # 5. Create app/build.gradle.kts
+        # app/build.gradle.kts
         printf 'plugins {\n    id("com.android.application")\n    id("org.jetbrains.kotlin.android")\n}\nandroid {\n    namespace = "com.rama77.app"\n    compileSdk = 34\n    defaultConfig {\n        applicationId = "com.rama77.app"\n        minSdk = 24\n        targetSdk = 34\n        versionCode = 2\n        versionName = "2.0"\n    }\n    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }\n    kotlinOptions {\n        jvmTarget = "17"\n    }\n}\ndependencies {\n    implementation("androidx.core:core-ktx:1.13.1")\n    implementation("androidx.appcompat:appcompat:1.7.0")\n    implementation("com.google.android.material:material:1.12.0")\n}\n' > app/build.gradle.kts
 
-        # 6. Create gradle.properties
+        # gradle.properties
         printf 'android.useAndroidX=true\nandroid.enableJetifier=true\norg.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8\n' > gradle.properties
 
-        # 7. Create AndroidManifest.xml
+        # AndroidManifest.xml
         printf '<?xml version="1.0" encoding="utf-8"?>\n<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.INTERNET" />\n    <application\n        android:allowBackup="true"\n        android:icon="@android:drawable/ic_menu_compass"\n        android:label="RAMA77"\n        android:supportsRtl="true"\n        android:theme="@style/Theme.AppCompat.Light.NoActionBar">\n        <activity\n            android:name=".MainActivity"\n            android:exported="true">\n            <intent-filter>\n                <action android:name="android.intent.action.MAIN" />\n                <category android:name="android.intent.category.LAUNCHER" />\n            </intent-filter>\n        </activity>\n    </application>\n</manifest>\n' > app/src/main/AndroidManifest.xml
 
-        # 8. Create basic MainActivity.kt
-        printf 'package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nclass MainActivity : AppCompatActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContentView(android.R.layout.activity_list_item)\n    }\n}\n' > app/src/main/java/com/rama77/app/MainActivity.kt
+        # Layout XML for MainActivity
+        printf '<?xml version="1.0" encoding="utf-8"?>\n<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"\n    android:layout_width="match_parent"\n    android:layout_height="match_parent"\n    android:orientation="vertical"\n    android:gravity="center"\n    android:background="#FF7A00"\n    android:padding="24dp">\n    <TextView\n        android:layout_width="wrap_content"\n        android:layout_height="wrap_content"\n        android:text="RAMA77"\n        android:textColor="#FFFFFF"\n        android:textSize="36sp"\n        android:textStyle="bold" />\n    <TextView\n        android:layout_width="wrap_content"\n        android:layout_height="wrap_content"\n        android:text="Welcome to Game Center"\n        android:textColor="#FFFFFF"\n        android:textSize="16sp"\n        android:layout_marginTop="8dp" />\n</LinearLayout>\n' > app/src/main/res/layout/activity_main.xml
 
-        # 9. Run Gradle build
+        # MainActivity.kt
+        printf 'package com.rama77.app\nimport android.os.Bundle\nimport androidx.appcompat.app.AppCompatActivity\nclass MainActivity : AppCompatActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContentView(R.layout.activity_main)\n    }\n}\n' > app/src/main/java/com/rama77/app/MainActivity.kt
+
+        # Gradle build
         gradle wrapper --gradle-version 8.6
         ./gradlew assembleDebug --no-daemon
 
