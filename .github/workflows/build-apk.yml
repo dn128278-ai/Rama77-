@@ -26,9 +26,8 @@ jobs:
     - name: 1. Setup Project Structure & Build APK
       run: |
         set -e
-        mkdir -p app/src/main/java/com/rama77/app/ui/fragments \
-                 app/src/main/java/com/rama77/app/ui/activities \
-                 app/src/main/java/com/rama77/app/adapter \
+        mkdir -p app/src/main/java/com/rama77/app/adapter \
+                 app/src/main/res/layout \
                  app/src/main/res/drawable \
                  app/src/main/res/values
 
@@ -51,7 +50,7 @@ jobs:
         }
         EOF
 
-        # Create basic item layout if missing
+        # Create item layout file
         cat << 'EOF' > app/src/main/res/layout/item_funds_menu.xml
         <?xml version="1.0" encoding="utf-8"?>
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
