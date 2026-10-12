@@ -31,7 +31,11 @@ jobs:
                  app/src/main/res/drawable \
                  app/src/main/res/color \
                  app/src/main/res/menu \
-                 app/src/main/res/mipmap-anydpi-v26 \
+                 app/src/main/res/mipmap-mdpi \
+                 app/src/main/res/mipmap-hdpi \
+                 app/src/main/res/mipmap-xhdpi \
+                 app/src/main/res/mipmap-xxhdpi \
+                 app/src/main/res/mipmap-xxxhdpi \
                  app/src/main/res/xml \
                  gradle/wrapper
         
@@ -62,7 +66,6 @@ jobs:
       run: |
         [ -f strings.xml ] && sed -i "s/Don't/Don\\\'t/g" strings.xml
 
-        # Generate missing backup and data extraction rules
         cat << 'EOF' > app/src/main/res/xml/backup_rules.xml
         <?xml version="1.0" encoding="utf-8"?>
         <full-backup-content>
@@ -121,14 +124,21 @@ jobs:
         </LinearLayout>
         EOF
 
-    - name: 3. Generate Drawables & Mock Kotlin
+    - name: 3. Generate Drawables, Mipmaps & Mock Kotlin
       run: |
         D="app/src/main/res/drawable"
         V='<vector xmlns:android="http://schemas.android.com/apk/res/android" width="24dp" height="24dp" viewportWidth="24" viewportHeight="24"><path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/></vector>'
         S='<shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#F16521"/><corners android:radius="8dp"/></shape>'
 
-        for name in bg_game_center_scaffold bg_orange_gradient_button bg_button_orange bg_orange_circle bg_orange_circle_badge bg_white_rounded_card bg_translucent_circle bg_translucent_pill bg_session_container bg_session_tab_active bg_session_tab_inactive bg_logo_icon bg_wallet_pill bg_page_inactive bg_page_active_orange bg_badge_amount_green bg_category_tab_selected bg_orange_gradient_drawer bg_play_button bg_avatar_circle bg_play_button_disabled ic_launcher ic_launcher_round; do
+        for name in bg_game_center_scaffold bg_orange_gradient_button bg_button_orange bg_orange_circle bg_orange_circle_badge bg_white_rounded_card bg_translucent_circle bg_translucent_pill bg_session_container bg_session_tab_active bg_session_tab_inactive bg_logo_icon bg_wallet_pill bg_page_inactive bg_page_active_orange bg_badge_amount_green bg_category_tab_selected bg_orange_gradient_drawer bg_play_button bg_avatar_circle bg_play_button_disabled; do
           echo "$S" > "$D/${name}.xml"
+        done
+
+        # Generate Launcher XMLs inside all mipmap folders to satisfy AndroidManifest
+        IC_XML='<vector xmlns:android="http://schemas.android.com/apk/res/android" width="48dp" height="48dp" viewportWidth="24" viewportHeight="24"><path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/></vector>'
+        for m in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+          echo "$IC_XML" > "app/src/main/res/$m/ic_launcher.xml"
+          echo "$IC_XML" > "app/src/main/res/$m/ic_launcher_round.xml"
         done
 
         for name in ic_dice_all ic_dice_1 ic_dice_2 ic_boxes ic_card_single ic_card_double ic_card_triple ic_gauge ic_brackets ic_users ic_layout_grid ic_call_orange ic_whatsapp_green ic_lock_key ic_starline_small ic_target ic_info_circle_orange ic_fingerprint_line ic_menu ic_wallet ic_bell ic_arrow_back ic_trash ic_play_button ic_play_arrow ic_user ic_clock_history ic_book_passbook ic_home ic_wallet_funds ic_support_headset ic_line_chart ic_help_circle ic_message_square ic_rupee_coin ic_file_text ic_settings ic_globe ic_moon ic_orange_gradient_drawer ic_avatar_circle ic_ico_circle_orange ic_share ic_log_out; do
