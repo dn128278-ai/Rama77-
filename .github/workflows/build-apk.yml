@@ -30,7 +30,6 @@ jobs:
                  app/src/main/res/xml \
                  gradle
         
-        # Root Settings file
         cat << 'EOF' > settings.gradle.kts
         pluginManagement {
             repositories {
@@ -133,9 +132,6 @@ jobs:
 
     - name: 4. Move Files & Build APK
       run: |
-        # Move build file to app folder if exists
-        [ -f build.gradle.kts ] && mv build.gradle.kts app/
-        
         for f in *.kt; do [ -f "$f" ] && mv "$f" app/src/main/java/com/rama77/app/; done
         for f in activity_*.xml fragment_*.xml item_*.xml nav_*.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/layout/; done
         for f in bottom_nav_menu.xml drawer_nav_menu.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/menu/; done
@@ -145,7 +141,8 @@ jobs:
         [ -f strings.xml ] && mv strings.xml app/src/main/res/values/
         [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
 
-        # Clean Root build file
+        # Clean root build file
+        rm -f build.gradle.kts
         cat << 'EOF' > build.gradle.kts
         plugins {
             id("com.android.application") version "8.2.0" apply false
@@ -153,7 +150,44 @@ jobs:
         }
         EOF
 
-        # Explicitly build module task
+        # Clean app-level build file to avoid version catalog errors
+        cat << 'EOF' > app/build.gradle.kts
+        plugins {
+            id("com.android.application")
+            id("org.jetbrains.kotlin.android")
+        }
+        android {
+            namespace = "com.rama77.app"
+            compileSdk = 34
+            defaultConfig {
+                applicationId = "com.rama77.app"
+                minSdk = 24
+                targetSdk = 34
+                versionCode = 1
+                versionName = "1.0"
+            }
+            buildTypes {
+                release {
+                    isMinifyEnabled = false
+                }
+            }
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
+            }
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+        dependencies {
+            implementation("androidx.core:core-ktx:1.12.0")
+            implementation("androidx.appcompat:appcompat:1.6.1")
+            implementation("com.google.android.material:material:1.11.0")
+            implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+            implementation("androidx.viewpager2:viewpager2:1.0.0")
+        }
+        EOF
+
         gradle :app:assembleDebug
 
     - name: Upload APK
