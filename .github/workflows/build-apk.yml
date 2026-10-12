@@ -21,7 +21,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
       with:
-        gradle-version: '8.5'
+        gradle-version: '8.6'
 
     - name: 1. Auto-Move Files & Build
       run: |
@@ -73,7 +73,6 @@ jobs:
         [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
 
         mkdir -p app
-        [ -f build.gradle.kts ] && cp build.gradle.kts app/build.gradle.kts
 
         cat << 'EOF' > build.gradle.kts
         plugins {
@@ -136,7 +135,7 @@ jobs:
 
     - name: 2. Build APK via Gradle
       run: |
-        gradle wrapper --gradle-version 8.5
+        gradle wrapper --gradle-version 8.6
         gradle :app:assembleDebug --no-daemon
 
     - name: Upload APK
