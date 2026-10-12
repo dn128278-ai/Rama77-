@@ -58,11 +58,25 @@ jobs:
         echo "android.enableJetifier=true" >> gradle.properties
         echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" >> gradle.properties
 
-    - name: 2. Generate Clean XML Resources
+    - name: 2. Generate Missing Resources & Rules
       run: |
         [ -f strings.xml ] && sed -i "s/Don't/Don\\\'t/g" strings.xml
-        
-        # Override corrupted fragment_support.xml directly with a valid clean layout
+
+        # Generate missing backup and data extraction rules
+        cat << 'EOF' > app/src/main/res/xml/backup_rules.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <full-backup-content>
+        </full-backup-content>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/xml/data_extraction_rules.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <data-extraction-rules>
+            <cloud-backup>
+            </cloud-backup>
+        </data-extraction-rules>
+        EOF
+
         cat << 'EOF' > fragment_support.xml
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -113,7 +127,7 @@ jobs:
         V='<vector xmlns:android="http://schemas.android.com/apk/res/android" width="24dp" height="24dp" viewportWidth="24" viewportHeight="24"><path android:fillColor="#F16521" android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/></vector>'
         S='<shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#F16521"/><corners android:radius="8dp"/></shape>'
 
-        for name in bg_game_center_scaffold bg_orange_gradient_button bg_button_orange bg_orange_circle bg_orange_circle_badge bg_white_rounded_card bg_translucent_circle bg_translucent_pill bg_session_container bg_session_tab_active bg_session_tab_inactive bg_logo_icon bg_wallet_pill bg_page_inactive bg_page_active_orange bg_badge_amount_green bg_category_tab_selected bg_orange_gradient_drawer bg_play_button bg_avatar_circle bg_play_button_disabled; do
+        for name in bg_game_center_scaffold bg_orange_gradient_button bg_button_orange bg_orange_circle bg_orange_circle_badge bg_white_rounded_card bg_translucent_circle bg_translucent_pill bg_session_container bg_session_tab_active bg_session_tab_inactive bg_logo_icon bg_wallet_pill bg_page_inactive bg_page_active_orange bg_badge_amount_green bg_category_tab_selected bg_orange_gradient_drawer bg_play_button bg_avatar_circle bg_play_button_disabled ic_launcher ic_launcher_round; do
           echo "$S" > "$D/${name}.xml"
         done
 
