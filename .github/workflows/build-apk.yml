@@ -23,7 +23,7 @@ jobs:
       with:
         gradle-version: '8.6'
 
-    - name: 1. Auto-Move Files & Build
+    - name: 1. Auto-Move Files & Generate Missing Resources
       run: |
         mkdir -p app/src/main/java/com/rama77/app/network/model \
                  app/src/main/java/com/rama77/app/network/sync \
@@ -40,6 +40,7 @@ jobs:
                  app/src/main/res/drawable \
                  app/src/main/res/menu \
                  app/src/main/res/xml \
+                 app/src/main/res/mipmap-anydpi-v26 \
                  gradle/wrapper
 
         [ -f LoginActivity.kt ] && mv LoginActivity.kt app/src/main/java/com/rama77/app/ui/login/
@@ -67,11 +68,118 @@ jobs:
         [ -f nav_header_main.xml ] && mv nav_header_main.xml app/src/main/res/layout/
         for f in bottom_nav_menu.xml drawer_nav_menu.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/menu/; done
         for f in bg_*.xml ic_*.xml; do [ -f "$f" ] && mv "$f" app/src/main/res/drawable/; done
-        [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/
         [ -f colors.xml ] && mv colors.xml app/src/main/res/values/
         [ -f themes.xml ] && mv themes.xml app/src/main/res/values/
 
-        # Overwrite fragment_support.xml with correct xmlns:app namespace to fix the ParseError
+        # Clean strings.xml
+        cat << 'EOF' > app/src/main/res/values/strings.xml
+        <resources>
+            <string name="app_name">RAMA77</string>
+            <string name="mpin_login_title">MPIN Login</string>
+            <string name="enter_mpin_prompt">Please enter your 4-digit MPIN to login your account</string>
+            <string name="forgot_mpin">Forgot MPIN?</string>
+            <string name="login_button">Login</string>
+            <string name="min_deposit_limit">Current minimum deposit limit Rs. 300</string>
+            <string name="call_now">Call Now</string>
+            <string name="whatsapp">Whatsapp</string>
+            <string name="bombay_starline">Bombay Starline</string>
+            <string name="bombay_jackpot">Bombay Jackpot</string>
+            <string name="nav_home">Home</string>
+            <string name="nav_history">History</string>
+            <string name="nav_passbook">Passbook</string>
+            <string name="nav_funds">Funds</string>
+            <string name="nav_support">Support</string>
+            <string name="user_name">Girish Meena</string>
+            <string name="user_phone">6377972674</string>
+            <string name="wallet_default">0</string>
+            <string name="app_version">App Version: 2</string>
+            <string name="new_registration">New Registration</string>
+            <string name="register_now">Register Now</string>
+            <string name="dont_have_account">Not registered yet?</string>
+            <string name="already_have_account">Already registered? Login</string>
+            <string name="mobile_number">Mobile Number</string>
+            <string name="password">Password</string>
+            <string name="promo_code">Promo Code (Optional)</string>
+            <string name="continue_setup_mpin">Continue to Setup MPIN</string>
+            <string name="setup_mpin_title">Set Up 4-Digit MPIN</string>
+            <string name="enter_new_mpin">Enter New 4-Digit MPIN</string>
+            <string name="confirm_mpin">Confirm 4-Digit MPIN</string>
+            <string name="enable_fingerprint">Enable Fingerprint Login</string>
+            <string name="complete_registration">Complete Registration</string>
+            <string name="welcome_bonus_registered">Welcome Bonus unlocked!</string>
+        </resources>
+        EOF
+
+        # Generate xml rules
+        cat << 'EOF' > app/src/main/res/xml/data_extraction_rules.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <data-extraction-rules>
+            <cloud-backup><include domain="sharedpref" path="."/></cloud-backup>
+        </data-extraction-rules>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/xml/backup_rules.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <full-backup-content>
+            <include domain="sharedpref" path="."/>
+        </full-backup-content>
+        EOF
+
+        # Generate default launcher icon XMLs
+        cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+            <background android:drawable="@android:color/white" />
+            <foreground android:drawable="@drawable/ic_headset_support" />
+        </adaptive-icon>
+        EOF
+
+        cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+            <background android:drawable="@android:color/white" />
+            <foreground android:drawable="@drawable/ic_headset_support" />
+        </adaptive-icon>
+        EOF
+
+        # Clean AndroidManifest.xml
+        cat << 'EOF' > app/src/main/AndroidManifest.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
+            <application
+                android:allowBackup="true"
+                android:dataExtractionRules="@xml/data_extraction_rules"
+                android:fullBackupContent="@xml/backup_rules"
+                android:icon="@mipmap/ic_launcher"
+                android:label="@string/app_name"
+                android:roundIcon="@mipmap/ic_launcher_round"
+                android:supportsRtl="true"
+                android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+                
+                <activity
+                    android:name=".MainActivity"
+                    android:exported="true">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN" />
+                        <category android:name="android.intent.category.LAUNCHER" />
+                    </intent-filter>
+                </activity>
+
+                <activity android:name=".ui.login.LoginActivity" android:exported="false" />
+                <activity android:name=".ui.register.RegisterActivity" android:exported="false" />
+                <activity android:name=".ui.gamecenter.GameCenterActivity" android:exported="false" />
+                <activity android:name=".ui.gamecenter.SubGameBetActivity" android:exported="false" />
+
+            </application>
+        </manifest>
+        EOF
+
+        # Overwrite fragment_support.xml
         cat << 'EOF' > app/src/main/res/layout/fragment_support.xml
         <?xml version="1.0" encoding="utf-8"?>
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -126,68 +234,6 @@ jobs:
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Deposit Issue"
-                        android:textColor="#1F2937"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/bg_orange_circle"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_chevron_right"
-                        android:contentDescription="Next" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardWithdrawIssue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Withdraw Issue"
-                        android:textColor="#1F2937"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/bg_orange_circle"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_chevron_right"
-                        android:contentDescription="Next" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardOtherIssue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Other Issue"
                         android:textColor="#1F2937"
                         android:textSize="16sp"
                         android:textStyle="bold" />
