@@ -153,23 +153,14 @@ jobs:
         import androidx.fragment.app.FragmentActivity
         import androidx.viewpager2.adapter.FragmentStateAdapter
 
-        val android.content.Context.charts: View? get() = null
-        val android.content.Context.funds: View? get() = null
-        val android.content.Context.history: View? get() = null
-        val android.content.Context.mpin: View? get() = null
-        val android.content.Context.passbook: View? get() = null
-        val android.content.Context.rates: View? get() = null
-        val android.content.Context.settings: View? get() = null
-        val android.content.Context.support: View? get() = null
-
-        val Fragment.charts: View? get() = null
-        val Fragment.funds: View? get() = null
-        val Fragment.history: View? get() = null
-        val Fragment.mpin: View? get() = null
-        val Fragment.passbook: View? get() = null
-        val Fragment.rates: View? get() = null
-        val Fragment.settings: View? get() = null
-        val Fragment.support: View? get() = null
+        val charts: View? get() = null
+        val funds: View? get() = null
+        val history: View? get() = null
+        val mpin: View? get() = null
+        val passbook: View? get() = null
+        val rates: View? get() = null
+        val settings: View? get() = null
+        val support: View? get() = null
 
         open class ChartsActivity : AppCompatActivity()
         open class ChangeMpinActivity : AppCompatActivity()
